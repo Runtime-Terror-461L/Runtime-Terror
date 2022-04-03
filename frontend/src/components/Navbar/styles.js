@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const Nav = styled.div`
-background: #101522;
+background: #637A99;
 height: 80px;
 display: flex;
 justify-content: space-evenly;

@@ -52,7 +52,7 @@ export const FormContent = styled.div`
 `
 
 export const Form = styled.form`
-  background: #333f48;
+  background: #637A99;
   max-width: 400px;
   height: auto;
   width: 100%;
@@ -88,7 +88,7 @@ export const FormInput = styled.input`
 `
 
 export const FormButton = styled.button`
-  background: #bf5700;
+  background: #DFAD3E;
   padding: 16px 0;
   border: none;
   border-radius: 4px;
