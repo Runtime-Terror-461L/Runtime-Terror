@@ -18,7 +18,7 @@ export const Container = styled.div`
   );
 `
 
-export const FormWrap = styled.div`
+export const SignInWrap = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -41,7 +41,7 @@ export const NavLink = styled(LinkRoute)`
   }
 `
 
-export const FormContent = styled.div`
+export const SignInContent = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -51,7 +51,7 @@ export const FormContent = styled.div`
   }
 `
 
-export const Form = styled.form`
+export const SignInForm = styled.form`
   background: #637A99;
   max-width: 400px;
   height: auto;
@@ -66,7 +66,7 @@ export const Form = styled.form`
   }
 `
 
-export const FormH1 = styled.h1`
+export const SignInH1 = styled.h1`
   margin-bottom: 40px;
   color: #fff;
   font-size: 20px;
@@ -74,20 +74,20 @@ export const FormH1 = styled.h1`
   text-align: center;
 `
 
-export const FormLabel = styled.label`
+export const SignInLabel = styled.label`
   margin-bottom: 8px;
   font-size: 14px;
   color: #fff;
 `
 
-export const FormInput = styled.input`
+export const SignInInput = styled.input`
   padding: 16px 16px;
   margin-bottom: 32px;
   border: none;
   border-radius: 4px;
 `
 
-export const FormButton = styled.button`
+export const SignInButton = styled.button`
   background: #DFAD3E;
   padding: 16px 0;
   border: none;

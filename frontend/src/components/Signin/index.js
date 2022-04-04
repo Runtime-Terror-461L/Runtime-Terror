@@ -1,13 +1,13 @@
 import {
     Container,
-    FormWrap,
+    SignInWrap,
     NavLink,
-    FormContent,
-    Form,
-    FormH1,
-    FormLabel,
-    FormInput,
-    FormButton,
+    SignInContent,
+    SignInForm,
+    SignInH1,
+    SignInLabel,
+    SignInInput,
+    SignInButton,
     Text
 } from './styles'
 
@@ -15,20 +15,20 @@ const SignIn = () => {
     return(
         <>
             <Container>
-                <FormWrap>
+                <SignInWrap>
                     <NavLink to="/">Hardware-as-a-Service</NavLink>
-                    <FormContent>
-                        <Form action="#">
-                            <FormH1>Sign In</FormH1>
-                            <FormLabel>Email</FormLabel>
-                            <FormInput type="email" required />
-                            <FormLabel>Password</FormLabel>
-                            <FormInput type="password" required />
-                            <FormButton type="submit">Sign In</FormButton>
+                    <SignInContent>
+                        <SignInForm action="#">
+                            <SignInH1>Sign Up</SignInH1>
+                            <SignInLabel>Email</SignInLabel>
+                            <SignInInput type="email" required />
+                            <SignInLabel>Password</SignInLabel>
+                            <SignInInput type="password" required />
+                            <SignInButton type="submit">Sign Up</SignInButton>
                             <Text>Don't have an account? <a href ="/signup">Sign up</a></Text>
-                        </Form>
-                    </FormContent>
-                </FormWrap>
+                        </SignInForm>
+                    </SignInContent>
+                </SignInWrap>
             </Container>
         </>
     )
