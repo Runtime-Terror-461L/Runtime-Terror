@@ -6,6 +6,7 @@ import {
 import Home from "./pages/home"
 import SigninPage from "./pages/signin"
 import SignupPage from "./pages/signup"
+import ProjectsPage from "./pages/projects"
 import Navbar from "./components/Navbar"
 import ErrorPage from "./pages/error"
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/" element = {<Home/>} />
           <Route path="signin" element={<SigninPage/>} />
           <Route path="signup" element={<SignupPage/>} />
+          <Route path="projects" element={<ProjectsPage/>} />
           <Route path="*" element={<ErrorPage/>} />
         </Routes>
       </Router>

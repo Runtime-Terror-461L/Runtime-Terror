@@ -2,13 +2,16 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 
 
 const UserPage = () => {
   return (
-
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={3}>
+    <Box sx={{ flexGrow: 1 }} >
+      <Grid container spacing={3} 
+        direction="row"
+        justifyContent="space-evenly"
+        alignItems="flex-start">
         <Grid item xs>
           <h2>Create a New Project</h2>
           <Box
@@ -45,9 +48,11 @@ const UserPage = () => {
         </Grid>
       </Grid>
     </Box>
-
+    
   )
 }
+
+export default UserPage
 
 
 //for existing projects may either use text area or text field to list all possibe ids or may scrap the idea entirely
