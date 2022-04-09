@@ -1,59 +1,145 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
 
 
-const UserPage = () => {
-  return (
-    <Box sx={{ flexGrow: 1 }} >
-      <Grid container spacing={3} 
-        direction="row"
-        justifyContent="space-evenly"
-        alignItems="flex-start">
-        <Grid item xs>
-          <h2>Create a New Project</h2>
-          <Box
-            component="form"
-            sx={{
-              '& > :not(style)': { m: 1, width: '25ch' },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField id="outlined-basic" label="Enter Name" variant="outlined" />
-            <TextField id="outlined-basic" label="Project ID" variant="outlined" />
-            <TextField id="outlined-basic" label="Description" variant="outlined" />
-          </Box>
-          <Button variant="contained">Confirm</Button>
-        </Grid>
-        <Grid item xs={6}>
-          <h2>Existing Projects</h2>
-          
-        </Grid>
-        <Grid item xs>
-          <h2>Join an Existing Project</h2>
-          <Box
-            component="form"
-            sx={{
-              '& > :not(style)': { m: 1, width: '25ch' },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField id="outlined-basic" label="Project ID" variant="outlined" />
-            <Button variant="contained">Confirm</Button>
-          </Box>
-        </Grid>
-      </Grid>
-    </Box>
+//const element [projName, setProjname] = useState('Controlled');
+
+class CreateProjForm extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      projName: '',
+      projID: '',
+      projDescrip:''
+    };
     
-  )
+    this.handleChangeid = this.handleChangeid.bind(this);
+    this.handleChangedescrip = this.handleChangedescrip.bind(this);
+    this.handleChangename = this.handleChangename.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChangeid(event){
+    this.setState({projID: event.target.value});
+  }
+
+  handleChangedescrip(event){
+    this.setState({projDescrip: event.target.value});
+  }
+
+  handleChangename(event){
+    this.setState({projName: event.target.value});
+  } 
+
+  handleSubmit(event) {
+    event.preventDefault();
+    alert("projid:" + this.state.projID+ " projectname:" + this.state.projName);
+    //need fetch and check for existing ids and/or names
+  }
+  
+  render(){
+    return (
+      <div>
+        <h2>Create a New Project</h2>
+        <Box
+          component="form"
+          sx={{
+            '& > :not(style)': { m: 1, width: '25ch' }, 
+          }}
+          noValidate
+          autoComplete="off"
+          onSubmit={this.handleSubmit}
+        >
+          <TextField id="outlined-basic" label="Enter Project Name" variant="outlined"  onChange={this.handleChangename} value={this.state.projName} required/>
+          <TextField id="outlined-basic" label="Project ID" variant="outlined" onChange={this.handleChangeid} value={this.state.projID} required/>
+          <TextField id="outlined-basic" label="Description" variant="outlined" multiline rows={4} value={this.state.projDescrip} onChange={this.handleChangedescrip}/>
+          
+          <Button variant="contained" type="submit">Confirm</Button>
+        </Box>
+      </div>
+    )
+  }
+  
+}
+
+class ExistingProjForm extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      projID: ''
+    };
+  
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event){
+    this.setState({projID: event.target.value});
+  } 
+
+  handleSubmit(event) {
+    event.preventDefault();
+    alert("projid:" + this.state.projID);
+    //include fetch instead of alert and check for incorrect ids
+  }
+
+  render(){
+    return(
+      <div>
+        <h2>Join an Existing Project</h2>
+        <Box
+          component="form"
+          sx={{
+            '& > :not(style)': { m: 1, width: '25ch' },
+          }}
+          noValidate
+          autoComplete="off"
+          onSubmit={this.handleSubmit}
+        >
+          <TextField id="outlined-basic" label="Project ID" variant="outlined" value={this.state.projID} onChange={this.handleChange} required/>
+          <Button variant="contained" type="submit">Confirm</Button>
+        </Box>
+      </div>
+    )
+  }
+}
+
+class UserPage extends React.Component {
+
+  render(){
+    return (
+      <Container sx={{ flexGrow: 1 }} >
+        <Grid container spacing={1} 
+          justify="center"
+          justifyContent="center"
+          alignItems="flex-start">
+          <Grid item xs>
+            <CreateProjForm/>
+          </Grid>
+          <Grid item xs>
+            <h2>Existing Projects</h2>
+            <text>No currently existing projects</text>
+          </Grid>
+          <Grid item xs>
+            <ExistingProjForm/>
+          </Grid>
+        </Grid>
+      </Container>
+    
+    )
+  }
+
 }
 
 export default UserPage
 
 
 //for existing projects may either use text area or text field to list all possibe ids or may scrap the idea entirely
-//also may need separate entities for each pat of project page
+//also may need separate entities for each part of project page
+//create errors for wrong project ids
