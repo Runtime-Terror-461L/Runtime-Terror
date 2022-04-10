@@ -63,7 +63,7 @@ def signIn():
 def signOut():
     session['loggedIn'] = False
     session['user'] = 0
-    return jsonify({'error': 'email and/or password are incorrect'}), 401
+    return jsonify({'message': 'user logged out'}), 401
 
 
 if __name__ == "__main__":
