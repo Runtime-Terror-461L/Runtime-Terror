@@ -15,7 +15,8 @@ class CreateProjForm extends React.Component {
     this.state = {
       projName: '',
       projID: '',
-      projDescrip:''
+      projDescrip:'',
+      projects: {}
     };
     
     this.handleChangeid = this.handleChangeid.bind(this);
@@ -50,7 +51,7 @@ class CreateProjForm extends React.Component {
                             projDescrip: this.state.projDescrip}),
     }).then((res)=>{
       if(res.ok){
-        console.log("Success: " + res)
+        console.log("Success: ")
       }
       else{
         console.log("Failure")
@@ -59,10 +60,22 @@ class CreateProjForm extends React.Component {
     }).then(
       res => res.json()
     ).then(
-      data => console.log(data)
+      data => {
+        //IF CREATED
+        if(data.created){
+          fetch("/get-projects").then(
+            res=>res.json()
+            ).then(
+              data => {
+                this.setState({projects: data})
+                console.log(data)
+              }
+            )
+        }
+      }
     )
   }
-  
+
   render(){
     return (
       <div>
@@ -152,7 +165,6 @@ class UserPage extends React.Component {
           </Grid>
         </Grid>
       </Container>
-    
     )
   }
 

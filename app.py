@@ -27,5 +27,11 @@ def create():
     return res
 
 
+@app.route("/get-projects")
+def get_projects():
+    projects = collection_Projects.find()
+    return {"list": list(projects)}
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=False, port=os.environ.get("PORT", 80))
