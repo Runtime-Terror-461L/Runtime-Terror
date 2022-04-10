@@ -9,6 +9,8 @@ import SignupPage from "./pages/signup"
 import Navbar from "./components/Navbar"
 import ErrorPage from "./pages/error"
 
+import ProjectViewDetails from "./pages/projects"
+
 // Routing V6: https://www.youtube.com/watch?v=UjHT_NKR_gU&ab_channel=PedroTech
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
           <Route path="/" element = {<Home/>} />
           <Route path="signin" element={<SigninPage/>} />
           <Route path="signup" element={<SignupPage/>} />
+          <Route path="projects" element={<ProjectViewDetails/>} />
           <Route path="*" element={<ErrorPage/>} />
         </Routes>
       </Router>
