@@ -9,6 +9,7 @@ import SignupPage from "./pages/signup"
 import ProjectsPage from "./pages/projects"
 import Navbar from "./components/Navbar"
 import ErrorPage from "./pages/error"
+import DatasetPage from "./pages/dataset";
 
 // Routing V6: https://www.youtube.com/watch?v=UjHT_NKR_gU&ab_channel=PedroTech
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="signin" element={<SigninPage/>} />
           <Route path="signup" element={<SignupPage/>} />
           <Route path="projects" element={<ProjectsPage/>} />
+          <Route path="datasets" element={<DatasetPage/>} />
           <Route path="*" element={<ErrorPage/>} />
         </Routes>
       </Router>
