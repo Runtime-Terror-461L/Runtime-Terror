@@ -8,9 +8,9 @@ app.secret_key = "testing"
 
 # connection to mongoDB client
 Client = MongoClient(
-    "mongodb+srv://asamant:jgaP0PINkADCHqRX@cluster0.oovet.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+    "mongodb+srv://gameobob:eyob354246@cluster0.kmqbv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 # database that is being interacted with
-dbname = Client.get_database("EE461L Project")
+dbname = Client.get_database("EE461L_Project")
 # collection that is being interacted with
 users = dbname.get_collection("Users")
 
@@ -37,11 +37,11 @@ def signUp():
             {
                 "name": name,
                 "email": email,
-                "password": password,
+                "password": password
             })
         session['loggedIn'] = True
         session['user'] = email
-        return jsonify(user), 200
+        return jsonify({"email": email}), 200
 
 
 @app.route('/signin', methods=['post'])
@@ -49,12 +49,12 @@ def signIn():
     info = json.loads(request.data)
     email = info['email']
     password = info['password']
-    user = users.find_one({}, {'email': email, 'password': password})
+    user = users.find_one({'email': email}, )
     # check if username and password are correct, if so login
-    if user and pbkdf2_sha256.verify(info['password'], user['password']):
+    if user and pbkdf2_sha256.verify(password, user['password']):
         session['loggedIn'] = True
         session['user'] = email
-        return jsonify(user), 200
+        return jsonify({"email": email}), 200
     # incorrect username or password
     else:
         return jsonify({'error': 'email and/or password are incorrect'}), 401
@@ -63,7 +63,7 @@ def signIn():
 def signOut():
     session['loggedIn'] = False
     session['user'] = 0
-    return jsonify({'message': 'user logged out'}), 401
+    return jsonify({'message': 'user logged out'}), 200
 
 
 if __name__ == "__main__":
