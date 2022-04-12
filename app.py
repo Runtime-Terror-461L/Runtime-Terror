@@ -58,7 +58,6 @@ def returnMetadata():
         data[str(i)]["tags"] = str(dataset.tags)
         data[str(i)]["download"] = "https://www.kaggle.com/"+str(dataset)+"/download"
     response = flask.jsonify({'Metadata': data})
-    response.headers.add('Access-Control-Allow-Origin', '*')
     print(data)
     print(response)
     memoizedDataResponse = response
