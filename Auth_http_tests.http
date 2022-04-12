@@ -1,0 +1,22 @@
+POST http://127.0.0.1:5000/signup
+Content-Type: application/json
+
+{"name": "Eyob",
+  "email": "eyobat@gmail.com",
+  "password": "password"}
+
+###
+POST http://127.0.0.1:5000/signout
+Content-Type: application/json
+
+{}
+
+###
+
+POST http://127.0.0.1:5000/signin
+Content-Type: application/json
+
+{"email": "eyobat@gmail.com",
+  "password": "password"}
+
+###
