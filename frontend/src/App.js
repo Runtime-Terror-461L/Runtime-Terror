@@ -10,6 +10,8 @@ import ProjectsPage from "./pages/projects"
 import Navbar from "./components/Navbar"
 import ErrorPage from "./pages/error"
 
+import ProjectViewDetails from "./pages/projects"
+
 // Routing V6: https://www.youtube.com/watch?v=UjHT_NKR_gU&ab_channel=PedroTech
 function App() {
   return (

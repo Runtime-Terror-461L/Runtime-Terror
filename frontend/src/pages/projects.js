@@ -18,7 +18,7 @@ class CreateProjForm extends React.Component {
       projDescrip:'',
       projects: {}
     };
-    
+
     this.handleChangeid = this.handleChangeid.bind(this);
     this.handleChangedescrip = this.handleChangedescrip.bind(this);
     this.handleChangename = this.handleChangename.bind(this);
@@ -35,7 +35,7 @@ class CreateProjForm extends React.Component {
 
   handleChangename(event){
     this.setState({projName: event.target.value});
-  } 
+  }
 
   handleSubmit(event) {
     event.preventDefault();
@@ -46,8 +46,8 @@ class CreateProjForm extends React.Component {
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify({_id: this.state.projID, 
-                            projName: this.state.projName, 
+      body: JSON.stringify({_id: this.state.projID,
+                            projName: this.state.projName,
                             projDescrip: this.state.projDescrip}),
     }).then((res)=>{
       if(res.ok){
@@ -83,7 +83,7 @@ class CreateProjForm extends React.Component {
         <Box
           component="form"
           sx={{
-            '& > :not(style)': { m: 1, width: '25ch' }, 
+            '& > :not(style)': { m: 1, width: '25ch' },
           }}
           noValidate
           autoComplete="off"
@@ -92,13 +92,13 @@ class CreateProjForm extends React.Component {
           <TextField id="outlined-basic" label="Enter Project Name" variant="outlined"  onChange={this.handleChangename} value={this.state.projName} required/>
           <TextField id="outlined-basic" label="Project ID" variant="outlined" onChange={this.handleChangeid} value={this.state.projID} required/>
           <TextField id="outlined-basic" label="Description" variant="outlined" multiline rows={4} value={this.state.projDescrip} onChange={this.handleChangedescrip}/>
-          
+
           <Button variant="contained" type="submit">Confirm</Button>
         </Box>
       </div>
     )
   }
-  
+
 }
 
 class ExistingProjForm extends React.Component {
@@ -108,14 +108,14 @@ class ExistingProjForm extends React.Component {
     this.state = {
       projID: ''
     };
-  
+
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange(event){
     this.setState({projID: event.target.value});
-  } 
+  }
 
   handleSubmit(event) {
     event.preventDefault();
@@ -149,7 +149,7 @@ class UserPage extends React.Component {
   render(){
     return (
       <Container sx={{ flexGrow: 1 }} >
-        <Grid container spacing={1} 
+        <Grid container spacing={1}
           justify="center"
           justifyContent="center"
           alignItems="flex-start">
