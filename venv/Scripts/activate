@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\jsirn\OneDrive\Desktop\3rd Year 2nd Semester\EE461L\461l_project\Runtime-Terror\venv"
+VIRTUAL_ENV="C:\Users\Dhruv\Documents\Github\Runtime-Terror\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
