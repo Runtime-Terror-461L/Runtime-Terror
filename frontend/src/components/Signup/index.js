@@ -59,7 +59,7 @@ const SignUp = () => {
 
     return(
         <>
-            <Container>
+            <Container style={{overflow:'auto'}}>
                 <SignUpWrap>
                     <NavLink to="/">Hardware-as-a-Service</NavLink>
                     <SignUpContent>
