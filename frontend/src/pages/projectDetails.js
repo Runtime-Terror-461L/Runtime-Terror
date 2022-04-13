@@ -50,13 +50,7 @@ const ProjectViewDetails = () => {
               <ListItem button divider>
                 <ListItemText primary="Hardware Set 2" />
               </ListItem>
-              <ListItem button>
-                <ListItemText primary="Hardware Set 3" />
-              </ListItem>
-              <Divider light />
-              <ListItem button>
-                <ListItemText primary="Hardware Set 4" />
-              </ListItem>
+
             </List>
 
           </Paper>
@@ -70,18 +64,20 @@ const ProjectViewDetails = () => {
               <ListItem button divider>
                 <ListItemText primary="Hardware Set 2" />
               </ListItem>
-              <ListItem button>
-                <ListItemText primary="Hardware Set 3" />
-              </ListItem>
-              <Divider light />
-              <ListItem button>
-                <ListItemText primary="Hardware Set 4" />
-              </ListItem>
+
             </List>
           </Paper>
           <Paper elevation={3} sx={{width:13/14}} >
             <h2 align="center">Checkout/Return Hardware</h2>
             <MultipleSelectCheckmarks/>
+            <TextField
+          id="outlined-number"
+          label="Number"
+          type="number"
+          InputLabelProps={{
+            shrink: true,
+          }} style = {{ marginTop:10, marginBottom:10}}
+        /><br/>
             <Button variant="contained" color="primary"  style = {{ marginBottom:10, marginRight:10 }}>
               Checkout
             </Button>
