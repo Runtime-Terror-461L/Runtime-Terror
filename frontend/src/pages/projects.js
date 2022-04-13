@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -22,7 +22,8 @@ class CreateProjForm extends React.Component {
     this.state = {
       projName: '',
       projID: '',
-      projDescrip:''
+      projDescrip:'',
+      projects: {}
     };
     
     this.handleChangeid = this.handleChangeid.bind(this);
@@ -46,7 +47,42 @@ class CreateProjForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     alert("projid:" + this.state.projID+ " projectname:" + this.state.projName);
-    //need fetch and check for existing ids and/or names
+    //need fetch and check for existing ids and then have it go to ./project/id page
+    fetch("/create", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        'Access-Control-Allow-Origin': '*',
+      },
+      credentials: "include",
+      body: JSON.stringify({_id: this.state.projID, 
+                            projName: this.state.projName, 
+                            projDescrip: this.state.projDescrip}),
+    }).then((res)=>{
+      if(res.ok){
+        console.log("Success: ")
+      }
+      else{
+        console.log("Failure")
+      }
+      return res
+    }).then(
+      res => res.json()
+    ).then(
+      data => {
+        //IF CREATED
+        console.log(data)
+        if(data.created){
+          fetch("/get-projects").then(
+            res=>res.json()
+            ).then(
+              data => {
+                this.setState({projects: data})
+              }
+            )
+        }
+      }
+    )
   }
   
   render(){
@@ -93,7 +129,36 @@ class ExistingProjForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     alert("projid:" + this.state.projID);
-    //include fetch instead of alert and check for incorrect ids
+    //include fetch instead of alert and check for incorrect ids and go to project/id page if it exists
+    fetch("/join", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        'Access-Control-Allow-Origin': '*',
+      },
+      credentials: "include",
+      body: JSON.stringify({_id: this.state.projID,}),
+    }).then((res)=>{
+      if(res.ok){
+        console.log("Success: ")
+      }
+      else{
+        console.log("Failure")
+      }
+      return res
+    }).then(
+      res => res.json()
+    ).then(
+      data => {
+        //IF JOINED
+        if(data.joined){
+          console.log("JOINED")
+        }
+        else{
+          console.log("NOT JOINED")
+        }
+      }
+    )
   }
 
   render(){
@@ -117,12 +182,63 @@ class ExistingProjForm extends React.Component {
   }
 }
 
-function createData(name, id) {
-  return { name, id };
+function projTable(){
+
+    const [List, setList] = useState([]);
+    useEffect(() => {
+        CreateData().then((data)=> {setList(data)});
+
+    }, []);
+
+    console.log(List);
+
+    var columns = [
+        {title: "Name", field: "name", },
+        {title: "ID", field: "id"},
+        {title: "Description", field: "descrip"},
+    ];
+
+    return(
+    <MaterialTable
+        title="Data"
+        data={List}
+        columns={columns}></MaterialTable>);
+
 }
 
-const rows = [];
+async function createData() {
+  const response = await fetch("http://127.0.0.1:5000/get-projects");
+  const data = await response.json();
+  //const result = data.Metadata;
+  console.log(data);
+  var rows = [];
+  for(let i=0; i<data.length; i++){
+    var entry = data[i];
+    rows[i]=entry;
+  }
+  return rows
+}
 
+/*
+function createProjTable() {
+
+  const [rows, setRows] = useState([]);
+    useEffect(() => {
+        CreateData().then((data)=> {setRows(data)});
+
+  }, []);
+
+  return rows
+
+}
+
+
+
+function createData(name, id, descrip) {
+  return { name, id, descrip };
+}*/
+
+/*
 function ProjectTable() {
   return(
     <TableContainer component={Paper}>
@@ -131,10 +247,11 @@ function ProjectTable() {
           <TableRow>
             <TableCell>Project Name</TableCell>
             <TableCell align="center">ID</TableCell>
+            <TableCell align="center">Description</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {createData().map((row) => (
             <TableRow
               key={row.name}
               sx={{ '&:last-child td, &:last-child th': {border:0} }}
@@ -142,14 +259,15 @@ function ProjectTable() {
               <TableCell component="th" scope="row">
                 {row.name}
               </TableCell>
-              <TableCell align="center">{row.id}</TableCell>
+              <TableCell align="center" href="/{row.id}">{row.id}</TableCell>
+              <TableCell align="center">{row.descrip}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
   );
-}
+}*/
 
 class UserPage extends React.Component {
 
@@ -168,7 +286,12 @@ class UserPage extends React.Component {
           <Grid item xs align="center">
             <Paper elevation={3}>
               <h2>Existing Projects</h2>
-              <text>No currently existing projects</text>
+              {projTable().length > 0 &&
+                <ProjectTable/>
+              }
+              {projTable().length === 0 &&
+                <text>No currently existing projects</text>
+              }
             </Paper>
           </Grid>
           <Grid item xs align="center">

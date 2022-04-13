@@ -24,15 +24,16 @@ api.authenticate()
 
 
 #comment on deployment
-CORS(app)
+# CORS(app)
 # connection to mongoDB client
 Client = MongoClient(
-    "mongodb+srv://gameobob:eyob354246@cluster0.kmqbv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "mongodb+srv://runtimeTerror:runtimeTerror1234@cluster0.egyl2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     tlsCAFile=ca)
 # database that is being interacted with
 dbname = Client.get_database("EE461L_Project")
 # collection that is being interacted with
 users = dbname.get_collection("Users")
+collection_Projects = dbname["Projects"]
 print(users)
 
 @app.route('/')
@@ -116,8 +117,10 @@ def signIn():
     if user and pbkdf2_sha256.verify(password, user['password']):
         session['loggedIn'] = True
         session['user'] = email
+
         print(session['loggedIn'])
         print(session['user'])
+
         response = jsonify({"email": email})
         print(response.headers)
         return response, 200
@@ -144,6 +147,51 @@ def test():
     print(session['user'])
     response = jsonify({'message': 'test'})
     return response, 200
+
+@app.route("/create", methods=["POST"])
+@cross_origin(supports_credentials=True)
+def create():
+    req = request.get_json()
+    items = collection_Projects.find({"_id": req["_id"]})
+    res = {"created": False}
+    if len(list(items)) == 0:
+        if "loggedIn" in session and session["loggedIn"]:
+            req["emails"] = req.setdefault("emails", [])
+            req["emails"].append({"email": session["user"]})
+            print(req)
+        else:
+            print("Not Logged")
+        collection_Projects.insert_one(req)
+        res["created"] = True
+    return res
+
+
+@app.route("/get-projects")
+@cross_origin(supports_credentials=True)
+def get_projects():
+    projects = []
+    if "user" in session:
+        projects = collection_Projects.find(
+            {"emails": {"$elemMatch": {"email": session["user"]}}}
+        )
+    return {"list": list(projects)}
+
+
+@app.route("/join", methods=["POST"])
+@cross_origin(supports_credentials=True)
+def join():
+    req = request.get_json()
+    project = {}
+    items = collection_Projects.find({"_id": req["_id"]})
+    res = {"joined": False}
+    for item in items:
+        project = item
+        print(project)
+        project["emails"] = project.setdefault("emails", [])
+        project["emails"].append({"email": session["user"]})
+        collection_Projects.replace_one({"_id": req["_id"]}, project)
+        res["joined"] = True
+    return res
 
 
 if __name__ == "__main__":
