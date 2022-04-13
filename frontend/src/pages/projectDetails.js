@@ -80,10 +80,13 @@ const ProjectViewDetails = () => {
             </List>
           </Paper>
           <Paper elevation={3} sx={{width:13/14}} >
-            <h2 align="center">Checkout Hardware</h2>
+            <h2 align="center">Checkout/Return Hardware</h2>
             <MultipleSelectCheckmarks/>
-            <Button variant="contained" color="primary"  style = {{ marginBottom:10 }}>
+            <Button variant="contained" color="primary"  style = {{ marginBottom:10, marginRight:10 }}>
               Checkout
+            </Button>
+            <Button variant="contained" color="primary"  style = {{ marginBottom:10 }}>
+              Return
             </Button>
 
           </Paper>
