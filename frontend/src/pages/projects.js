@@ -22,7 +22,8 @@ class CreateProjForm extends React.Component {
     this.state = {
       projName: '',
       projID: '',
-      projDescrip:''
+      projDescrip:'',
+      projects: {}
     };
     
     this.handleChangeid = this.handleChangeid.bind(this);
@@ -47,6 +48,41 @@ class CreateProjForm extends React.Component {
     event.preventDefault();
     alert("projid:" + this.state.projID+ " projectname:" + this.state.projName);
     //need fetch and check for existing ids and/or names
+    fetch("/create", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        'Access-Control-Allow-Origin': '*',
+      },
+      credentials: "include",
+      body: JSON.stringify({_id: this.state.projID, 
+                            projName: this.state.projName, 
+                            projDescrip: this.state.projDescrip}),
+    }).then((res)=>{
+      if(res.ok){
+        console.log("Success: ")
+      }
+      else{
+        console.log("Failure")
+      }
+      return res
+    }).then(
+      res => res.json()
+    ).then(
+      data => {
+        //IF CREATED
+        console.log(data)
+        if(data.created){
+          fetch("/get-projects").then(
+            res=>res.json()
+            ).then(
+              data => {
+                this.setState({projects: data})
+              }
+            )
+        }
+      }
+    )
   }
   
   render(){
@@ -94,6 +130,35 @@ class ExistingProjForm extends React.Component {
     event.preventDefault();
     alert("projid:" + this.state.projID);
     //include fetch instead of alert and check for incorrect ids
+    fetch("/join", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        'Access-Control-Allow-Origin': '*',
+      },
+      credentials: "include",
+      body: JSON.stringify({_id: this.state.projID,}),
+    }).then((res)=>{
+      if(res.ok){
+        console.log("Success: ")
+      }
+      else{
+        console.log("Failure")
+      }
+      return res
+    }).then(
+      res => res.json()
+    ).then(
+      data => {
+        //IF JOINED
+        if(data.joined){
+          console.log("JOINED")
+        }
+        else{
+          console.log("NOT JOINED")
+        }
+      }
+    )
   }
 
   render(){

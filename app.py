@@ -6,6 +6,7 @@ from flask_cors import CORS, cross_origin
 import os
 import json
 import certifi
+import hardwareSet
 # from api.HelloApiHandler import HelloApiHandler
 
 ca = certifi.where()
@@ -33,6 +34,7 @@ Client = MongoClient(
 dbname = Client.get_database("EE461L_Project")
 # collection that is being interacted with
 users = dbname.get_collection("Users")
+collection_Projects = dbname["Projects"]
 print(users)
 
 @app.route('/')
@@ -95,7 +97,9 @@ def signUp():
             {
                 "name": name,
                 "email": email,
-                "password": password
+                "password": password,
+                "hwset1": {"capacity": 100, "availability": 100, "checkedout_qty": 0},
+                "hwset2": {"capacity": 100, "availability": 100, "checkedout_qty": 0},
             })
         session['loggedIn'] = True
         session['user'] = email
@@ -116,8 +120,16 @@ def signIn():
     if user and pbkdf2_sha256.verify(password, user['password']):
         session['loggedIn'] = True
         session['user'] = email
+
+        users_info = users.find({"email": email})
+        for user_info in users_info:
+            session["hwset1"] = user_info["hwset1"]
+            session["hwset2"] = user_info["hwset2"]
+
         print(session['loggedIn'])
         print(session['user'])
+        print(session["hwset1"])
+        print(session["hwset2"])
         response = jsonify({"email": email})
         print(response.headers)
         return response, 200
@@ -132,6 +144,8 @@ def signIn():
 def signOut():
     session['loggedIn'] = False
     session['user'] = 0
+    session["hwset1"] = None
+    session["hwset2"] = None
     return jsonify({'message': 'user logged out'}), 200
 
 
@@ -144,6 +158,51 @@ def test():
     print(session['user'])
     response = jsonify({'message': 'test'})
     return response, 200
+
+@app.route("/create", methods=["POST"])
+@cross_origin(supports_credentials=True)
+def create():
+    req = request.get_json()
+    items = collection_Projects.find({"_id": req["_id"]})
+    res = {"created": False}
+    if len(list(items)) == 0:
+        if "loggedIn" in session and session["loggedIn"]:
+            req["emails"] = req.setdefault("emails", [])
+            req["emails"].append({"email": session["user"]})
+            print(req)
+        else:
+            print("Not Logged")
+        collection_Projects.insert_one(req)
+        res["created"] = True
+    return res
+
+
+@app.route("/get-projects")
+@cross_origin(supports_credentials=True)
+def get_projects():
+    projects = []
+    if "user" in session:
+        projects = collection_Projects.find(
+            {"emails": {"$elemMatch": {"email": session["user"]}}}
+        )
+    return {"list": list(projects)}
+
+
+@app.route("/join", methods=["POST"])
+@cross_origin(supports_credentials=True)
+def join():
+    req = request.get_json()
+    project = {}
+    items = collection_Projects.find({"_id": req["_id"]})
+    res = {"joined": False}
+    for item in items:
+        project = item
+        print(project)
+        project["emails"] = project.setdefault("emails", [])
+        project["emails"].append({"email": session["user"]})
+        collection_Projects.replace_one({"_id": req["_id"]}, project)
+        res["joined"] = True
+    return res
 
 
 if __name__ == "__main__":
