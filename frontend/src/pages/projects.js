@@ -83,7 +83,6 @@ class CreateProjForm extends React.Component {
         }
       }
     )
->>>>>>> origin/projects-joon2
   }
   
   render(){
@@ -183,6 +182,30 @@ class ExistingProjForm extends React.Component {
   }
 }
 
+function projTable(){
+
+    const [List, setList] = useState([]);
+    useEffect(() => {
+        CreateData().then((data)=> {setList(data)});
+
+    }, []);
+
+    console.log(List);
+
+    var columns = [
+        {title: "Name", field: "name", },
+        {title: "ID", field: "id"},
+        {title: "Description", field: "descrip"},
+    ];
+
+    return(
+    <MaterialTable
+        title="Data"
+        data={List}
+        columns={columns}></MaterialTable>);
+
+}
+
 async function createData() {
   const response = await fetch("http://127.0.0.1:5000/get-projects");
   const data = await response.json();
@@ -215,7 +238,7 @@ function createData(name, id, descrip) {
   return { name, id, descrip };
 }*/
 
-
+/*
 function ProjectTable() {
   return(
     <TableContainer component={Paper}>
@@ -244,7 +267,7 @@ function ProjectTable() {
       </Table>
     </TableContainer>
   );
-}
+}*/
 
 class UserPage extends React.Component {
 
@@ -263,10 +286,10 @@ class UserPage extends React.Component {
           <Grid item xs align="center">
             <Paper elevation={3}>
               <h2>Existing Projects</h2>
-              {createData().length > 0 &&
+              {projTable().length > 0 &&
                 <ProjectTable/>
               }
-              {createData().length === 0 &&
+              {projTable().length === 0 &&
                 <text>No currently existing projects</text>
               }
             </Paper>
