@@ -82,7 +82,7 @@ const ProjectViewDetails = () => {
               Checkout
             </Button>
             <Button variant="contained" color="primary"  style = {{ marginBottom:10 }}>
-              Return
+              Checkin
             </Button>
 
           </Paper>

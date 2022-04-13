@@ -20,9 +20,7 @@ const MenuProps = {
 
 const names = [
   'Hardware Set 1',
-  'Hardware Set 2',
-  'Hardware Set 3',
-  'Hardware Set 4'
+  'Hardware Set 2'
 ];
 
 export default function MultipleSelectCheckmarks() {
