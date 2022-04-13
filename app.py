@@ -24,7 +24,7 @@ api.authenticate()
 
 
 #comment on deployment
-CORS(app)
+# CORS(app)
 # connection to mongoDB client
 Client = MongoClient(
     "mongodb+srv://runtimeTerror:runtimeTerror1234@cluster0.egyl2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
