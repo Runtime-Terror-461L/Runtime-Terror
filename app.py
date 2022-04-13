@@ -6,7 +6,6 @@ from flask_cors import CORS, cross_origin
 import os
 import json
 import certifi
-import hardwareSet
 # from api.HelloApiHandler import HelloApiHandler
 
 ca = certifi.where()
@@ -28,7 +27,7 @@ api.authenticate()
 CORS(app)
 # connection to mongoDB client
 Client = MongoClient(
-    "mongodb+srv://gameobob:eyob354246@cluster0.kmqbv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "mongodb+srv://runtimeTerror:runtimeTerror1234@cluster0.egyl2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     tlsCAFile=ca)
 # database that is being interacted with
 dbname = Client.get_database("EE461L_Project")
@@ -97,9 +96,7 @@ def signUp():
             {
                 "name": name,
                 "email": email,
-                "password": password,
-                "hwset1": {"capacity": 100, "availability": 100, "checkedout_qty": 0},
-                "hwset2": {"capacity": 100, "availability": 100, "checkedout_qty": 0},
+                "password": password
             })
         session['loggedIn'] = True
         session['user'] = email
@@ -121,15 +118,9 @@ def signIn():
         session['loggedIn'] = True
         session['user'] = email
 
-        users_info = users.find({"email": email})
-        for user_info in users_info:
-            session["hwset1"] = user_info["hwset1"]
-            session["hwset2"] = user_info["hwset2"]
-
         print(session['loggedIn'])
         print(session['user'])
-        print(session["hwset1"])
-        print(session["hwset2"])
+
         response = jsonify({"email": email})
         print(response.headers)
         return response, 200
@@ -144,8 +135,6 @@ def signIn():
 def signOut():
     session['loggedIn'] = False
     session['user'] = 0
-    session["hwset1"] = None
-    session["hwset2"] = None
     return jsonify({'message': 'user logged out'}), 200
 
 

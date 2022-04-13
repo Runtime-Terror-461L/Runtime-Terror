@@ -14,7 +14,7 @@ import { useState } from 'react';
 
 function SignUpUser(credentials){
     const body = JSON.stringify(credentials);
-    return fetch("http://localhost:5000/signup", {
+    return fetch("/signup", {
         method: 'Post',
         headers: {
             'Content-Type': 'application/json',
