@@ -10,6 +10,7 @@ import ProjectsPage from "./pages/projects"
 import Navbar from "./components/Navbar"
 import ErrorPage from "./pages/error"
 import DatasetPage from "./pages/dataset";
+import ProjectViewDetails from "./pages/projectDetails"
 
 // Routing V6: https://www.youtube.com/watch?v=UjHT_NKR_gU&ab_channel=PedroTech
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path="signup" element={<SignupPage/>} />
           <Route path="projects" element={<ProjectsPage/>} />
           <Route path="datasets" element={<DatasetPage/>} />
+          <Route path="project_details" element={<ProjectViewDetails/>} />
           <Route path="*" element={<ErrorPage/>} />
         </Routes>
       </Router>

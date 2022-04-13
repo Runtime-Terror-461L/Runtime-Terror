@@ -21,7 +21,7 @@ import { Container } from 'react-bootstrap'
 
 function SignInUser(credentials){
     const body = JSON.stringify(credentials);
-    return fetch("http://localhost:5000/signin", {
+    return fetch("/signin", {
         method: 'Post',
         headers: {
             'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ function SignInUser(credentials){
 }
 
 function Test(){
-    const a = fetch("http://localhost:5000/test", {
+    const a = fetch("/test", {
         method: 'Post',
         headers: {
             'Content-Type': 'application/json',
