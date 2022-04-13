@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -46,7 +46,7 @@ class CreateProjForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     alert("projid:" + this.state.projID+ " projectname:" + this.state.projName);
-    //need fetch and check for existing ids and/or names
+    //need fetch and check for existing ids and then have it go to ./project/id page
   }
   
   render(){
@@ -93,7 +93,7 @@ class ExistingProjForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     alert("projid:" + this.state.projID);
-    //include fetch instead of alert and check for incorrect ids
+    //include fetch instead of alert and check for incorrect ids and go to project/id page if it exists
   }
 
   render(){
@@ -117,11 +117,38 @@ class ExistingProjForm extends React.Component {
   }
 }
 
-function createData(name, id) {
-  return { name, id };
+async function createData() {
+  const response = await fetch("http://127.0.0.1:5000/get-projects");
+  const data = await response.json();
+  //const result = data.Metadata;
+  console.log(data);
+  var rows = [];
+  for(let i=0; i<data.length; i++){
+    var entry = data[i];
+    rows[i]=entry;
+  }
+  return rows
 }
 
-const rows = [];
+/*
+function createProjTable() {
+
+  const [rows, setRows] = useState([]);
+    useEffect(() => {
+        CreateData().then((data)=> {setRows(data)});
+
+  }, []);
+
+  return rows
+
+}
+
+
+
+function createData(name, id, descrip) {
+  return { name, id, descrip };
+}*/
+
 
 function ProjectTable() {
   return(
@@ -131,10 +158,11 @@ function ProjectTable() {
           <TableRow>
             <TableCell>Project Name</TableCell>
             <TableCell align="center">ID</TableCell>
+            <TableCell align="center">Description</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {createData().map((row) => (
             <TableRow
               key={row.name}
               sx={{ '&:last-child td, &:last-child th': {border:0} }}
@@ -142,7 +170,8 @@ function ProjectTable() {
               <TableCell component="th" scope="row">
                 {row.name}
               </TableCell>
-              <TableCell align="center">{row.id}</TableCell>
+              <TableCell align="center" href="/{row.id}">{row.id}</TableCell>
+              <TableCell align="center">{row.descrip}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -168,7 +197,12 @@ class UserPage extends React.Component {
           <Grid item xs align="center">
             <Paper elevation={3}>
               <h2>Existing Projects</h2>
-              <text>No currently existing projects</text>
+              {createData().length > 0 &&
+                <ProjectTable/>
+              }
+              {createData().length === 0 &&
+                <text>No currently existing projects</text>
+              }
             </Paper>
           </Grid>
           <Grid item xs align="center">
