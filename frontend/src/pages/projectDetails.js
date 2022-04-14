@@ -17,11 +17,18 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 
 import MultipleSelectCheckmarks from "./checkout"
+import {useLocation} from 'react-router-dom';
 
 
 const ProjectViewDetails = () => {
+
+  const location = useLocation();
+  const ID = location.state.id;
+  console.log("Hello This is input from other file");
+  console.log(location.state.id);
     return (
       <div>
+      <h1>{location.state.id}</h1>
 
       <Grid container>
 

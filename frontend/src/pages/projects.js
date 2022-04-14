@@ -12,6 +12,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import MaterialTable from 'material-table';
+import { useNavigate } from 'react-router-dom';
+import { AddBox } from '@material-ui/icons';
 
 //const element [projName, setProjname] = useState('Controlled');
 
@@ -181,6 +183,8 @@ class ExistingProjForm extends React.Component {
 }
 
 function ProjTable(props){
+
+  let navigate = useNavigate();
   console.log(props);
 
     const list = props.list;
@@ -195,7 +199,22 @@ function ProjTable(props){
     <MaterialTable
         title="Data"
         data={list}
-        columns={columns}></MaterialTable>);
+        columns={columns}
+        actions={[
+          {
+            icon: () => <AddBox />,
+            tooltip:"visitPage",
+            onClick: (event, rowData) =>{
+              console.log("This is rowData");
+              console.log(rowData["_id"]);
+              const id = rowData["_id"]
+              navigate('/project_details', {state:{id}});
+
+
+            }
+          }
+        ]}
+        ></MaterialTable>);
 
 }
 
