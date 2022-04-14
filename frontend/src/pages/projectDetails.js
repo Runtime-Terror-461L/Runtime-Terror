@@ -8,8 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import InputLabel from "@mui/material/InputLabel";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -18,35 +17,52 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 
 import MultipleSelectCheckmarks from "./checkout"
+import {useLocation} from 'react-router-dom';
 
 
 
 
 const ProjectViewDetails = () => {
-		const {state} = useLocation();
-    
-    /*
-    const response = await fetch("http://127.0.0.1:5000/getProjectInfo");
-    const data = await response.json();
-    const result = data.Metadata;
-    */
-    const [projectName, setProjectName] = useState(""); 
-    const [projectDesc, setProjectDesc] = useState("");
+
+    const {state} = useLocation()
+
+    const [projectName, setProjectName] = useState("")
+    const [projectDesc, setProjectDesc] = useState("")
     const [name, setName] = useState("");
 		const [number, setNumber] = useState(0);
     const [hwset1, setHWSet1] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
     const [hwset2, setHWSet2] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
 
     const updateData = () => { // TODO: update route names based on backend
-      fetch('route - api/get_hwset1')
-          .then(response => response.json()) // assumes data is formatted like {"hwset1": data={"capacity": 100, "availability": 100, "checkedout_qty": 0}}
-          .then(data => setHWSet1(data));
-      fetch('route - api/get_hwset2')
-          .then(response => response.json())
-          .then(data => setHWSet2(data));
+      // fetch('route - api/get_hwset1')
+      //     .then(response => response.json()) // assumes data is formatted like {"hwset1": data={"capacity": 100, "availability": 100, "checkedout_qty": 0}}
+      //     .then(data => setHWSet1(data));
+      // fetch('route - api/get_hwset2')
+      //     .then(response => response.json())
+      //     .then(data => setHWSet2(data));
+      fetch("/get-project", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        credentials: "include",
+        body: JSON.stringify({_id: state.id})
+      }).then(
+        res => res.json()
+      ).then(
+        data => {
+          setProjectName(data.projName)
+          setProjectDesc(data.projDescrip)
+          setHWSet1(data.hwset1)
+          setHWSet2(data.hwset2)
+        }
+      )
     }
-    updateData();
 
+    useEffect(()=>{
+      updateData();
+    }, [])   
     
     const numberChange = event => {
   		setNumber(event.target.value);
@@ -57,13 +73,60 @@ const ProjectViewDetails = () => {
     const checkOut = async () => {
   		console.log(number + " " + name)
       // TODO: checkout via POST (pass number and name)
+      fetch("/checkout", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          _id: state.id,
+          number: number,
+          name: name
+        })
+      }).then(
+        res => res.json()
+      ).then(
+        data => {
+          if(data.hwset1error || data.hwset2error){
+            alert("Check out exceeds availability")
+          }
+          setHWSet1(data.hwset1)
+          setHWSet2(data.hwset2)
+        }
+      )
       updateData();
 		}
     const checkIn = async () => {
   		console.log(number + " " + name)
       // TODO: checkout via POST (pass number and name)
+      fetch("/checkin", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          _id: state.id,
+          number: number,
+          name: name
+        })
+      }).then(
+        res => res.json()
+      ).then(
+        data => {
+          if(data.hwset1error || data.hwset2error){
+            alert("Check in exceeds capacity")
+          }
+          setHWSet1(data.hwset1)
+          setHWSet2(data.hwset2)
+        }
+      )
       updateData();
 		}
+
     return (
       <div>
 
