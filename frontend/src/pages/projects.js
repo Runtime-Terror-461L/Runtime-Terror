@@ -11,7 +11,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-
+import MaterialTable from 'material-table';
 
 //const element [projName, setProjname] = useState('Controlled');
 
@@ -182,15 +182,10 @@ class ExistingProjForm extends React.Component {
   }
 }
 
-function projTable(){
+function ProjTable(props){
+  console.log(props);
 
-    const [List, setList] = useState([]);
-    useEffect(() => {
-        CreateData().then((data)=> {setList(data)});
-
-    }, []);
-
-    console.log(List);
+    const list = props.list;
 
     var columns = [
         {title: "Name", field: "name", },
@@ -201,13 +196,13 @@ function projTable(){
     return(
     <MaterialTable
         title="Data"
-        data={List}
+        data={list}
         columns={columns}></MaterialTable>);
 
 }
 
-async function createData() {
-  const response = await fetch("http://127.0.0.1:5000/get-projects");
+async function CreateData() {
+  const response = await fetch("http://localhost:5000/get-projects");
   const data = await response.json();
   //const result = data.Metadata;
   console.log(data);
@@ -269,9 +264,19 @@ function ProjectTable() {
   );
 }*/
 
-class UserPage extends React.Component {
+function UserPage(){
 
-  render(){
+  const [List, setList] = useState([]);
+  console.log(List);
+  useEffect(() => {
+      CreateData().then((data)=> {setList(data)});
+
+  }, []);
+  
+
+  
+  
+
     return (
       <Container sx={{ flexGrow: 1 }} >
         <Grid container spacing={2} 
@@ -286,12 +291,7 @@ class UserPage extends React.Component {
           <Grid item xs align="center">
             <Paper elevation={3}>
               <h2>Existing Projects</h2>
-              {projTable().length > 0 &&
-                <ProjectTable/>
-              }
-              {projTable().length === 0 &&
-                <text>No currently existing projects</text>
-              }
+              <ProjTable list ={List}/>
             </Paper>
           </Grid>
           <Grid item xs align="center">
@@ -303,7 +303,6 @@ class UserPage extends React.Component {
       </Container>
     
     )
-  }
 
 }
 
