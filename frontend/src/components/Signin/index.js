@@ -34,7 +34,7 @@ function SignInUser(credentials){
 }
 
 function Test(){
-    const a = fetch("/test", {
+    const a = fetch("http://localhost:5000/test", {
         method: 'Post',
         headers: {
             'Content-Type': 'application/json',
