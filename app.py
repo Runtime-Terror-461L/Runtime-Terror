@@ -151,6 +151,7 @@ def test():
 @app.route("/create", methods=["POST"])
 @cross_origin(supports_credentials=True)
 def create():
+    print(session)
     req = request.get_json()
     items = collection_Projects.find({"_id": req["_id"]})
     res = {"created": False}
@@ -169,11 +170,16 @@ def create():
 @app.route("/get-projects")
 @cross_origin(supports_credentials=True)
 def get_projects():
+    print(session)
     projects = []
     if "user" in session:
+        print(session["user"])
         projects = collection_Projects.find(
             {"emails": {"$elemMatch": {"email": session["user"]}}}
         )
+        print(projects)
+    else:
+        print("no user")
     return {"list": list(projects)}
 
 

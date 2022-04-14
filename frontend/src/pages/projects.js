@@ -12,6 +12,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import MaterialTable from 'material-table';
+import { useNavigate } from 'react-router-dom';
+import { AddBox } from '@material-ui/icons';
 
 //const element [projName, setProjname] = useState('Controlled');
 
@@ -48,7 +50,7 @@ class CreateProjForm extends React.Component {
     event.preventDefault();
     alert("projid:" + this.state.projID+ " projectname:" + this.state.projName);
     //need fetch and check for existing ids and then have it go to ./project/id page
-    fetch("/create", {
+    fetch("http://localhost:5000/create", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -73,13 +75,7 @@ class CreateProjForm extends React.Component {
         //IF CREATED
         console.log(data)
         if(data.created){
-          fetch("/get-projects").then(
-            res=>res.json()
-            ).then(
-              data => {
-                this.setState({projects: data})
-              }
-            )
+          this.props.onChange();
         }
       }
     )
@@ -123,6 +119,7 @@ class ExistingProjForm extends React.Component {
   }
 
   handleChange(event){
+    
     this.setState({projID: event.target.value});
   } 
 
@@ -130,7 +127,7 @@ class ExistingProjForm extends React.Component {
     event.preventDefault();
     alert("projid:" + this.state.projID);
     //include fetch instead of alert and check for incorrect ids and go to project/id page if it exists
-    fetch("/join", {
+    fetch("http://localhost:5000/join", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -139,6 +136,8 @@ class ExistingProjForm extends React.Component {
       credentials: "include",
       body: JSON.stringify({_id: this.state.projID,}),
     }).then((res)=>{
+
+      this.props.onChange();
       if(res.ok){
         console.log("Success: ")
       }
@@ -148,6 +147,7 @@ class ExistingProjForm extends React.Component {
       return res
     }).then(
       res => res.json()
+
     ).then(
       data => {
         //IF JOINED
@@ -183,34 +183,66 @@ class ExistingProjForm extends React.Component {
 }
 
 function ProjTable(props){
+
+  let navigate = useNavigate();
   console.log(props);
 
     const list = props.list;
 
     var columns = [
-        {title: "Name", field: "name", },
-        {title: "ID", field: "id"},
-        {title: "Description", field: "descrip"},
+        {title: "Name", field: "projName", },
+        {title: "ID", field: "_id"},
+        {title: "Description", field: "projDescrip"},
     ];
 
     return(
     <MaterialTable
         title="Data"
         data={list}
-        columns={columns}></MaterialTable>);
+        columns={columns}
+        actions={[
+          {
+            icon: () => <AddBox />,
+            tooltip:"visitPage",
+            onClick: (event, rowData) =>{
+              console.log("This is rowData");
+              console.log(rowData["_id"]);
+              const id = rowData["_id"]
+              navigate('/project_details', {state:{id}});
+
+
+            }
+          }
+        ]}
+        ></MaterialTable>);
 
 }
 
 async function CreateData() {
-  const response = await fetch("http://localhost:5000/get-projects");
+  const response = await fetch("http://localhost:5000/get-projects",
+  {
+    method: "GET",
+    headers: {
+      "Content-type": "application/json",
+      'Access-Control-Allow-Origin': '*',
+    },
+    credentials: "include",
+  }
+  );
   const data = await response.json();
   //const result = data.Metadata;
-  console.log(data);
+  console.log("This is the response from the server")
+  console.log(data.list);
+  const dataList = data.list;
+  console.log(dataList);
+
   var rows = [];
-  for(let i=0; i<data.length; i++){
-    var entry = data[i];
+  for(let i=0; i<dataList.length; i++){
+    var entry = dataList[i];
     rows[i]=entry;
   }
+  console.log("This is Rows")
+  console.log(rows);
   return rows
 }
 
@@ -272,6 +304,13 @@ function UserPage(){
       CreateData().then((data)=> {setList(data)});
 
   }, []);
+
+  function handleChange(newValue) {
+    CreateData().then((data)=> {setList(data)});
+    
+  }
+
+
   
 
   
@@ -285,7 +324,7 @@ function UserPage(){
           alignItems="flex-start">
           <Grid item xs align="center">
             <Paper elevation={3}>
-              <CreateProjForm/>
+              <CreateProjForm onChange={handleChange}/>
             </Paper>
           </Grid>
           <Grid item xs align="center">
@@ -296,7 +335,7 @@ function UserPage(){
           </Grid>
           <Grid item xs align="center">
             <Paper elevation={3}>
-              <ExistingProjForm/>
+              <ExistingProjForm onChange={handleChange}/>
             </Paper>
           </Grid>
         </Grid>
