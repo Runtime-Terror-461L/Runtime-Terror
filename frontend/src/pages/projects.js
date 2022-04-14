@@ -25,7 +25,8 @@ class CreateProjForm extends React.Component {
       projName: '',
       projID: '',
       projDescrip:'',
-      projects: {}
+      projects: {},
+      error:''
     };
     
     this.handleChangeid = this.handleChangeid.bind(this);
@@ -63,9 +64,11 @@ class CreateProjForm extends React.Component {
     }).then((res)=>{
       if(res.ok){
         console.log("Success: ")
+        this.setState({error:""});
       }
       else{
         console.log("Failure")
+        this.setState({error:"Project was not created"});
       }
       return res
     }).then(
@@ -97,7 +100,8 @@ class CreateProjForm extends React.Component {
           <TextField id="outlined-basic" label="Enter Project Name" variant="outlined"  onChange={this.handleChangename} value={this.state.projName} required/>
           <TextField id="outlined-basic" label="Enter Project ID" variant="outlined" onChange={this.handleChangeid} value={this.state.projID} required/>
           <TextField id="outlined-basic" label="Enter Description" variant="outlined" multiline rows={4} value={this.state.projDescrip} onChange={this.handleChangedescrip}/>
-          
+          { this.state.error &&
+            <h3 className="error"> { this.state.error } </h3> }
           <Button variant="contained" type="submit">Confirm</Button>
         </Box>
       </div>
@@ -111,7 +115,8 @@ class ExistingProjForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      projID: ''
+      projID: '',
+      error:''
     };
   
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -153,9 +158,11 @@ class ExistingProjForm extends React.Component {
         //IF JOINED
         if(data.joined){
           console.log("JOINED")
+          this.setState({ error: "" });
         }
         else{
           console.log("NOT JOINED")
+          this.setState({ error: "Project does not exist, please enter a new ID" });
         }
       }
     )
@@ -175,6 +182,8 @@ class ExistingProjForm extends React.Component {
           onSubmit={this.handleSubmit}
         >
           <TextField id="outlined-basic" label="Enter Project ID" variant="outlined" value={this.state.projID} onChange={this.handleChange} required/>
+          { this.state.error &&
+            <h4 className="error"> { this.state.error } </h4> }
           <Button variant="contained" type="submit">Confirm</Button>
         </Box>
       </div>
