@@ -19,7 +19,42 @@ import Select from "@mui/material/Select";
 import MultipleSelectCheckmarks from "./checkout"
 
 
+
+
 const ProjectViewDetails = () => {
+			
+    const [name, setName] = useState("");
+		const [number, setNumber] = useState(0);
+    const [hwset1, setHWSet1] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
+    const [hwset2, setHWSet2] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
+
+    const updateData = () => { // TODO: update route names based on backend
+      fetch('route - api/get_hwset1')
+          .then(response => response.json()) // assumes data is formatted like {"hwset1": data={"capacity": 100, "availability": 100, "checkedout_qty": 0}}
+          .then(data => setHWSet1(data));
+      fetch('route - api/get_hwset2')
+          .then(response => response.json())
+          .then(data => setHWSet2(data));
+    }
+    updateData();
+
+    
+    const numberChange = event => {
+  		setNumber(event.target.value);
+		};
+    const nameChange = (name) => {
+    	setName(name);
+    }
+    const checkOut = async () => {
+  		console.log(number + " " + name)
+      // TODO: checkout via POST (pass number and name)
+      updateData();
+		}
+    const checkIn = async () => {
+  		console.log(number + " " + name)
+      // TODO: checkout via POST (pass number and name)
+      updateData();
+		}
     return (
       <div>
 
@@ -44,11 +79,11 @@ const ProjectViewDetails = () => {
             <h2 align="center">Current Hardware Sets</h2>
             <List aria-label="mailbox folders">
               <ListItem button>
-                <ListItemText primary="Hardware Set 1" />
+                <ListItemText primary="Hardware Set 1" secondary={'Availability: ' + hwset1['availability'] + ', Capacity: ' + hwset1['capacity']} />
               </ListItem>
               <Divider />
               <ListItem button divider>
-                <ListItemText primary="Hardware Set 2" />
+                <ListItemText primary="Hardware Set 2" secondary={'Availability: ' + hwset2['availability'] + ', Capacity: ' + hwset2['capacity']} />
               </ListItem>
 
             </List>
@@ -58,30 +93,31 @@ const ProjectViewDetails = () => {
             <h2 align="center">List of Checked Out Sets</h2>
             <List aria-label="mailbox folders">
               <ListItem button>
-                <ListItemText primary="Hardware Set 1" />
+                <ListItemText primary="Hardware Set 1" secondary={'Checked out quantity: ' + hwset1['checkedout_qty']}/>
               </ListItem>
               <Divider />
               <ListItem button divider>
-                <ListItemText primary="Hardware Set 2" />
+                <ListItemText primary="Hardware Set 2" secondary={'Checked out quantity: ' + hwset2['checkedout_qty']}/>
               </ListItem>
 
             </List>
           </Paper>
           <Paper elevation={3} sx={{width:13/14}} >
             <h2 align="center">Checkout/Return Hardware</h2>
-            <MultipleSelectCheckmarks/>
+            <MultipleSelectCheckmarks onChange={nameChange}/>
             <TextField
           id="outlined-number"
           label="Number"
           type="number"
+          onChange={numberChange}
           InputLabelProps={{
             shrink: true,
           }} style = {{ marginTop:10, marginBottom:10}}
         /><br/>
-            <Button variant="contained" color="primary"  style = {{ marginBottom:10, marginRight:10 }}>
+            <Button variant="contained" onClick={checkOut} color="primary"  style = {{ marginBottom:10, marginRight:10 }}>
               Checkout
             </Button>
-            <Button variant="contained" color="primary"  style = {{ marginBottom:10 }}>
+            <Button variant="contained" onClick={checkIn} color="primary"  style = {{ marginBottom:10 }}>
               Checkin
             </Button>
 
