@@ -9,6 +9,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
 import InputLabel from "@mui/material/InputLabel";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -17,14 +18,20 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 
 import MultipleSelectCheckmarks from "./checkout"
-import {useLocation} from 'react-router-dom';
 
 
 
 
 const ProjectViewDetails = () => {
-
-			
+		const {state} = useLocation();
+    
+    /*
+    const response = await fetch("http://127.0.0.1:5000/getProjectInfo");
+    const data = await response.json();
+    const result = data.Metadata;
+    */
+    const [projectName, setProjectName] = useState(""); 
+    const [projectDesc, setProjectDesc] = useState("");
     const [name, setName] = useState("");
 		const [number, setNumber] = useState(0);
     const [hwset1, setHWSet1] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
@@ -57,27 +64,19 @@ const ProjectViewDetails = () => {
       // TODO: checkout via POST (pass number and name)
       updateData();
 		}
-
-
-  const location = useLocation();
-  const ID = location.state.id;
-  console.log("Hello This is input from other file");
-  console.log(location.state.id);
-
     return (
       <div>
-      <h1>{location.state.id}</h1>
 
       <Grid container>
 
       <Grid item xs={12} md={4} align="center">
 
         <Paper elevation={3} sx={{width:6/7}} >
-          <h2 align="center">Project Name: UT AWS #1101</h2>
+          <h2 align="center">Project Name: {projectName}, ID: {state.id}</h2>
         </Paper>
         <Paper elevation={3} sx={{width:6/7}} >
           <h2 align="center">Description</h2>
-          <p style = {{ padding:10 }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          <p style = {{ padding:10 }}>{projectDesc}</p>
         </Paper>
         <Button variant="contained" color="primary">
           Home
