@@ -23,7 +23,7 @@ const names = [
   'Hardware Set 2'
 ];
 
-export default function MultipleSelectCheckmarks() {
+export default function MultipleSelectCheckmarks(props) {
   const [personName, setPersonName] = React.useState([]);
 
   const handleChange = (event) => {
@@ -34,6 +34,7 @@ export default function MultipleSelectCheckmarks() {
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
+    props.onChange(value);
   };
 
   return (

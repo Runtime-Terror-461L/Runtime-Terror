@@ -1,8 +1,8 @@
 class HWSet:
-    def __init__(self, capacity, availability, checkedout_qty):
-        self.capacity = capacity
-        self.availability = availability
-        self.checkedout_qty = checkedout_qty
+    def __init__(self, document):
+        self.capacity = document["capacity"]
+        self.availability = document["availability"]
+        self.checkedout_qty = document["checkedout_qty"]
 
     def get_availability(self):
         return self.availability
@@ -24,7 +24,12 @@ class HWSet:
             return 0
 
     def check_in(self, qty):
-        self.availability += qty
+        if self.capacity < self.availability+qty:
+            self.availability = self.capacity
+            return -1
+        else:
+            self.availability += qty
+            return 0
 
     def __str__(self):
         return (
@@ -35,3 +40,6 @@ class HWSet:
             + " checkedout_qty: "
             + str(self.checkedout_qty)
         )
+
+    def jsonify(self):
+        return {"capacity": self.capacity, "availability": self.availability, "checkedout_qty": self.checkedout_qty}
