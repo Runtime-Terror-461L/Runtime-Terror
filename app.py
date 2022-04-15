@@ -38,8 +38,18 @@ dbname = Client.get_database("EE461L_Project")
 # collection that is being interacted with
 users = dbname.get_collection("Users")
 collection_Projects = dbname["Projects"]
+collection_HardwareSets = dbname["HardwareSets"]
 print(users)
 
+hardwareSets = collection_HardwareSets.find()
+hwset1, hwset2 = None, None
+for hardware in hardwareSets:
+    if hardware["_id"] == "hwset1":
+        hwset1 = hardwareSet.HWSet(hardware)
+    elif hardware["_id"] == "hwset2":
+        hwset2 = hardwareSet.HWSet(hardware)
+print(hwset1)
+print(hwset2)
 
 @app.route("/")
 @cross_origin(supports_credentials=True)
@@ -104,8 +114,6 @@ def signUp():
                 "name": name,
                 "email": email,
                 "password": password
-                # "hwset1": {"capacity": 100, "availability": 100, "checkedout_qty": 0},
-                # "hwset2": {"capacity": 100, "availability": 100, "checkedout_qty": 0},
             }
         )
         session["loggedIn"] = True
@@ -131,15 +139,8 @@ def signIn():
         session["loggedIn"] = True
         session["user"] = email
 
-        # users_info = users.find({"email": email})
-        # for user_info in users_info:
-        #     session["hwset1"] = user_info["hwset1"]
-        #     session["hwset2"] = user_info["hwset2"]
-
         print(session["loggedIn"])
         print(session["user"])
-        # print(session["hwset1"])
-        # print(session["hwset2"])
         response = jsonify({"email": email})
         print(response.headers)
         return response, 200
@@ -155,8 +156,6 @@ def signIn():
 def signOut():
     session["loggedIn"] = False
     session["user"] = 0
-    # session["hwset1"] = None
-    # session["hwset2"] = None
     return jsonify({"message": "user logged out"}), 200
 
 
@@ -175,8 +174,6 @@ def test():
 @cross_origin(supports_credentials=True)
 def create():
     req = request.get_json()
-    req["hwset1"] = {"capacity": 100, "availability": 100, "checkedout_qty": 0}
-    req["hwset2"] = {"capacity": 100, "availability": 100, "checkedout_qty": 0}
     items = collection_Projects.find({"_id": req["_id"]})
     res = {"created": False}
     if len(list(items)) == 0:
@@ -226,6 +223,8 @@ def get_project():
     req = request.get_json()
     items = collection_Projects.find({"_id": req["_id"]})
     for item in items:
+        item["hwset1"] = hwset1.jsonify()
+        item["hwset2"] = hwset2.jsonify()
         return item
 
 
@@ -233,29 +232,22 @@ def get_project():
 @cross_origin(supports_credentials=True)
 def checkout():
     req = request.get_json()
-    print(req)
-    name = req["name"]
-    res = {"hwset1error": False, "hwset2error": False}
-    items = collection_Projects.find({"_id": req["_id"]})
-    for item in items:
-        res["hwset1"], res["hwset2"] = item["hwset1"], item["hwset2"]
-        if "Hardware Set 1" in name:
-            hwset1 = hardwareSet.HWSet(item["hwset1"])
-            if(hwset1.check_out(int(req["number"]))==0):
-                res["hwset1error"] = False
-            else:
-                res["hwset1error"] = True
-            collection_Projects.update_one({"_id": req["_id"]}, {"$set": {"hwset1": hwset1.jsonify()}})
-            res["hwset1"] = hwset1.jsonify()
-            
-        if "Hardware Set 2" in name:
-            hwset2 = hardwareSet.HWSet(item["hwset2"])
-            if(hwset2.check_out(int(req["number"]))==0):
-                res["hwset2error"] = False
-            else:
-                res["hwset2error"] = True
-            collection_Projects.update_one({"_id": req["_id"]}, {"$set": {"hwset2": hwset2.jsonify()}})
-            res["hwset2"] = hwset2.jsonify()
+    print("testing1: " + str(req))
+    res = {"hwset1error": False, "hwset2error": False, "hwset1": hwset1.jsonify(), "hwset2": hwset2.jsonify()}
+    if "Hardware Set 1" in req["name"]:
+        if hwset1.check_out(req) == 0:
+            res["hwset1error"] = False
+        else:
+            res["hwset1error"] = True
+        collection_HardwareSets.replace_one({"_id": "hwset1"}, hwset1.jsonify())
+        res["hwset1"] = hwset1.jsonify()
+    if "Hardware Set 2" in req["name"]:
+        if hwset2.check_out(req) == 0:
+            res["hwset2error"] = False
+        else:
+            res["hwset2error"] = True
+        collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
+        res["hwset2"] = hwset2.jsonify()
 
     return res
 
@@ -264,27 +256,22 @@ def checkout():
 @cross_origin(supports_credentials=True)
 def checkin():
     req = request.get_json()
-    name = req["name"]
-    res = {"hwset1error": False, "hwset2error": False}
-    items = collection_Projects.find({"_id": req["_id"]})
-    for item in items:
-        res["hwset1"], res["hwset2"] = item["hwset1"], item["hwset2"]
-        if "Hardware Set 1" in name:
-            hwset1 = hardwareSet.HWSet(item["hwset1"])
-            if(hwset1.check_in(int(req["number"]))==0):
-                res["hwset1error"] = False
-            else:
-                res["hwset1error"] = True
-            collection_Projects.update_one({"_id": req["_id"]}, {"$set": {"hwset1": hwset1.jsonify()}})
-            res["hwset1"] = hwset1.jsonify()
-        if "Hardware Set 2" in name:
-            hwset2 = hardwareSet.HWSet(item["hwset2"])
-            if(hwset2.check_in(int(req["number"]))==0):
-                res["hwset2error"] = False
-            else:
-                res["hwset2error"] = True
-            collection_Projects.update_one({"_id": req["_id"]}, {"$set": {"hwset2": hwset2.jsonify()}})
-            res["hwset2"] = hwset2.jsonify()
+    print("testing1: " + str(req))
+    res = {"hwset1error": False, "hwset2error": False, "hwset1": hwset1.jsonify(), "hwset2": hwset2.jsonify()}
+    if "Hardware Set 1" in req["name"]:
+        if hwset1.check_in(req) == 0:
+            res["hwset1error"] = False
+        else:
+            res["hwset1error"] = True
+        collection_HardwareSets.replace_one({"_id": "hwset1"}, hwset1.jsonify())
+        res["hwset1"] = hwset1.jsonify()
+    if "Hardware Set 2" in req["name"]:
+        if hwset2.check_in(req) == 0:
+            res["hwset2error"] = False
+        else:
+            res["hwset2error"] = True
+        collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
+        res["hwset2"] = hwset2.jsonify()
 
     return res
 

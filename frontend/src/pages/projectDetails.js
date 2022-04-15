@@ -30,8 +30,8 @@ const ProjectViewDetails = () => {
     const [projectDesc, setProjectDesc] = useState("")
     const [name, setName] = useState("");
 		const [number, setNumber] = useState(0);
-    const [hwset1, setHWSet1] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
-    const [hwset2, setHWSet2] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
+    const [hwset1, setHWSet1] = useState({'capacity':0, 'availability':0, 'checkedout_qty':{}}); 
+    const [hwset2, setHWSet2] = useState({'capacity':0, 'availability':0, 'checkedout_qty':{}}); 
 
     const updateData = () => { // TODO: update route names based on backend
       // fetch('route - api/get_hwset1')
@@ -118,7 +118,7 @@ const ProjectViewDetails = () => {
       ).then(
         data => {
           if(data.hwset1error || data.hwset2error){
-            alert("Check in exceeds capacity")
+            alert("Check in exceeds checkedout_qty")
           }
           setHWSet1(data.hwset1)
           setHWSet2(data.hwset2)
@@ -165,11 +165,13 @@ const ProjectViewDetails = () => {
             <h2 align="center">List of Checked Out Sets</h2>
             <List aria-label="mailbox folders">
               <ListItem button>
-                <ListItemText primary="Hardware Set 1" secondary={'Checked out quantity: ' + hwset1['checkedout_qty']}/>
+                {/* <ListItemText primary="Hardware Set 1" secondary={'Checked out quantity: ' + (hwset1["checkedout_qty"][state.id]==undefined)? 0 : hwset1["checkedout_qty"][state.id]}/> */}
+                <ListItemText primary="Hardware Set 1" secondary={'Checked out quantity: ' + hwset1["checkedout_qty"][state.id]}/>
               </ListItem>
               <Divider />
               <ListItem button divider>
-                <ListItemText primary="Hardware Set 2" secondary={'Checked out quantity: ' + hwset2['checkedout_qty']}/>
+                {/* <ListItemText primary="Hardware Set 2" secondary={'Checked out quantity: ' + (hwset2["checkedout_qty"][state.id]==undefined)? 0 : hwset2["checkedout_qty"][state.id]}/> */}
+                <ListItemText primary="Hardware Set 2" secondary={'Checked out quantity: ' + hwset2["checkedout_qty"][state.id]}/>
               </ListItem>
 
             </List>
