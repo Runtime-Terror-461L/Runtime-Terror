@@ -29,7 +29,7 @@ const ProjectViewDetails = () => {
     const [projectName, setProjectName] = useState("")
     const [projectDesc, setProjectDesc] = useState("")
     const [name, setName] = useState("");
-		const [number, setNumber] = useState(0);
+		const [number, setNumber] = useState("0");
     const [hwset1, setHWSet1] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
     const [hwset2, setHWSet2] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
 
@@ -40,7 +40,7 @@ const ProjectViewDetails = () => {
       // fetch('route - api/get_hwset2')
       //     .then(response => response.json())
       //     .then(data => setHWSet2(data));
-      fetch("/get-project", {
+      fetch("http://localhost:5000/get-project-sets", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -52,10 +52,12 @@ const ProjectViewDetails = () => {
         res => res.json()
       ).then(
         data => {
-          setProjectName(data.projName)
-          setProjectDesc(data.projDescrip)
-          setHWSet1(data.hwset1)
-          setHWSet2(data.hwset2)
+          console.log("This is data from get-project-sets")
+          console.log(data)
+          setHWSet1(data.hw1_info)
+          setHWSet2(data.hw2_info)
+          setProjectName(data.proj_info.name)
+          setProjectDesc(data.proj_info.description)
         }
       )
     }
@@ -73,7 +75,7 @@ const ProjectViewDetails = () => {
     const checkOut = async () => {
   		console.log(number + " " + name)
       // TODO: checkout via POST (pass number and name)
-      fetch("/checkout", {
+      fetch("http://localhost:5000/checkout", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -89,11 +91,15 @@ const ProjectViewDetails = () => {
         res => res.json()
       ).then(
         data => {
-          if(data.hwset1error || data.hwset2error){
+          if(data.error){
             alert("Check out exceeds availability")
           }
-          setHWSet1(data.hwset1)
-          setHWSet2(data.hwset2)
+          if(data.set_name === "Hardware Set 1"){
+            setHWSet1(data.info)
+          }
+          if(data.set_name === "Hardware Set 2"){
+            setHWSet2(data.info)
+          }
         }
       )
       updateData();
@@ -101,7 +107,7 @@ const ProjectViewDetails = () => {
     const checkIn = async () => {
   		console.log(number + " " + name)
       // TODO: checkout via POST (pass number and name)
-      fetch("/checkin", {
+      fetch("http://localhost:5000/checkin", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -117,16 +123,19 @@ const ProjectViewDetails = () => {
         res => res.json()
       ).then(
         data => {
-          if(data.hwset1error || data.hwset2error){
-            alert("Check in exceeds capacity")
+          if(data.error){
+            alert("Check in exceeds checkedout_qty")
           }
-          setHWSet1(data.hwset1)
-          setHWSet2(data.hwset2)
+          if(data.set_name === "Hardware Set 1"){
+            setHWSet1(data.info)
+          }
+          if(data.set_name === "Hardware Set 2"){
+            setHWSet2(data.info)
+          }
         }
       )
       updateData();
 		}
-
     return (
       <div>
 
@@ -165,11 +174,13 @@ const ProjectViewDetails = () => {
             <h2 align="center">List of Checked Out Sets</h2>
             <List aria-label="mailbox folders">
               <ListItem button>
-                <ListItemText primary="Hardware Set 1" secondary={'Checked out quantity: ' + hwset1['checkedout_qty']}/>
+                {/* <ListItemText primary="Hardware Set 1" secondary={'Checked out quantity: ' + (hwset1["checkedout_qty"][state.id]==undefined)? 0 : hwset1["checkedout_qty"][state.id]}/> */}
+                <ListItemText primary="Hardware Set 1" secondary={'Checked out quantity: ' + hwset1["checkedout_qty"]}/>
               </ListItem>
               <Divider />
               <ListItem button divider>
-                <ListItemText primary="Hardware Set 2" secondary={'Checked out quantity: ' + hwset2['checkedout_qty']}/>
+                {/* <ListItemText primary="Hardware Set 2" secondary={'Checked out quantity: ' + (hwset2["checkedout_qty"][state.id]==undefined)? 0 : hwset2["checkedout_qty"][state.id]}/> */}
+                <ListItemText primary="Hardware Set 2" secondary={'Checked out quantity: ' + hwset2["checkedout_qty"]}/>
               </ListItem>
 
             </List>
