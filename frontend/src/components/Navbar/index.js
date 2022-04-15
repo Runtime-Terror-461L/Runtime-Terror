@@ -3,6 +3,7 @@ import {
   Link,
 } from "react-router-dom";
 import { Nav } from './styles'
+import SignOutButton from '../SignOutButton';
 
 function Navbar(){ 
   return (
@@ -12,6 +13,8 @@ function Navbar(){
             <Link to="signup"style={{color:"white"}}>Sign Up</Link>
             <Link to="projects"style={{color:"white"}}>Projects</Link>
             <Link to="datasets"style={{color:"white"}}>Datasets</Link>
+            <SignOutButton></SignOutButton>
+
 
     </Nav>
   )
