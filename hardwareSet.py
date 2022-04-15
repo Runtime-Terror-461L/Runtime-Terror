@@ -1,5 +1,6 @@
 class HWSet:
     def __init__(self, document):
+        self._id = document["_id"]
         self.capacity = document["capacity"]
         self.availability = document["availability"]
         self.checkedout_qty = document["checkedout_qty"]
@@ -13,27 +14,34 @@ class HWSet:
     def get_checkedout_qty(self):
         return self.checkedout_qty
 
-    def check_out(self, qty):
+    def check_out(self, req):
+        print("testing2: " + str(req))
+        qty = int(req["number"])
         if self.availability < qty:
-            self.checkedout_qty += self.availability
+            self.checkedout_qty[req["_id"]] = self.checkedout_qty.get(req["_id"], 0) + self.availability
             self.availability = 0
             return -1
         else:
+            self.checkedout_qty[req["_id"]] = self.checkedout_qty.get(req["_id"], 0) + qty
             self.availability -= qty
-            self.checkedout_qty += qty
             return 0
 
-    def check_in(self, qty):
-        if self.capacity < self.availability+qty:
-            self.availability = self.capacity
+    def check_in(self, req):
+        qty = int(req["number"])
+        if self.checkedout_qty.get(req["_id"], 0) < qty:
+            self.availability += self.checkedout_qty.get(req["_id"], 0)
+            self.checkedout_qty[req["_id"]] = 0
             return -1
         else:
             self.availability += qty
+            self.checkedout_qty[req["_id"]] = self.checkedout_qty.get(req["_id"], 0) - qty
             return 0
 
     def __str__(self):
         return (
-            "capacity: "
+            str(self._id) 
+            + ": "
+            + "capacity: "
             + str(self.capacity)
             + " availability: "
             + str(self.availability)
@@ -42,4 +50,4 @@ class HWSet:
         )
 
     def jsonify(self):
-        return {"capacity": self.capacity, "availability": self.availability, "checkedout_qty": self.checkedout_qty}
+        return {"_id": self._id, "capacity": self.capacity, "availability": self.availability, "checkedout_qty": self.checkedout_qty}
