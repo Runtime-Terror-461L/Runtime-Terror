@@ -39,7 +39,11 @@ dbname = Client.get_database("EE461L_Project")
 users = dbname.get_collection("Users")
 collection_Projects = dbname["Projects"]
 collection_HardwareSets = dbname["HardwareSets"]
-print(users)
+
+print("Users are: ", users)
+print("Projects are: ", collection_Projects)
+print("HW sets are: collection_HardwareSets")
+
 
 hardwareSets = collection_HardwareSets.find()
 hwset1, hwset2 = None, None
@@ -88,7 +92,7 @@ def returnMetadata():
 def signUp():
     # user input of signup page
     info = json.loads(request.data)
-    print(info)
+    print("The Request for Sign Up is ", info)
     name = info["name"]
     email = info["email"]
     password = pbkdf2_sha256.hash(info["password"])
@@ -125,9 +129,8 @@ def signUp():
 @app.route("/signin", methods=["post"])
 @cross_origin(supports_credentials=True)
 def signIn():
-    print(request)
     info = json.loads(request.data)
-    print(info)
+    print("request for sign In is ", info)
     email = info["email"]
     password = info["password"]
 
@@ -142,12 +145,12 @@ def signIn():
         print(session["loggedIn"])
         print(session["user"])
         response = jsonify({"email": email})
-        print(response.headers)
+        print("The response is ", response)
         return response, 200
     # incorrect username or password
     else:
         response = jsonify({"error": "email and/or password are incorrect"})
-        print(response.headers)
+        print("The response is ", response)
         return response, 401
 
 
@@ -174,22 +177,26 @@ def test():
 @cross_origin(supports_credentials=True)
 def create():
     req = request.get_json()
+    print("The Request for create is ", req)
     items = collection_Projects.find({"_id": req["_id"]})
+    print("The query returned ", list(items))
     res = {"created": False}
     if len(list(items)) == 0:
         hwset1.init_project(req["_id"])
         hwset2.init_project(req["_id"])
+        print("initializing checked out to zero")
         collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
         collection_HardwareSets.replace_one({"_id": "hwset1"}, hwset1.jsonify())
 
         if "loggedIn" in session and session["loggedIn"]:
+            print("I am logged In")
             req["emails"] = req.setdefault("emails", [])
             req["emails"].append({"email": session["user"]})
-            print(req)
         else:
             print("Not Logged")
         collection_Projects.insert_one(req)
         res["created"] = True
+    print("The response is ", res)
     return res
 
 
@@ -201,6 +208,7 @@ def get_projects():
         projects = collection_Projects.find(
             {"emails": {"$elemMatch": {"email": session["user"]}}}
         )
+    print("This is the response: ", {"list": list(projects)})
     return {"list": list(projects)}
 
 
@@ -225,7 +233,9 @@ def join():
 @app.route("/get-project-sets", methods=["POST"])
 @cross_origin(supports_credentials=True)
 def get_project():
+
     req = request.get_json()
+    print("This is the request", req)
     projID = req["_id"]
     items = collection_Projects.find({"_id": projID})
     name= ""
@@ -256,7 +266,7 @@ def get_project():
 
 
     }
-
+    print("This is the response", res)
     return jsonify(res)
 
 
@@ -264,7 +274,13 @@ def get_project():
 @cross_origin(supports_credentials=True)
 def checkout():
     req = request.get_json()
-    print("testing1: " + str(req))
+    print("This is the checkout request", req)
+    print("This is HW 1")
+    print(hwset1)
+    print("This is HW 2")
+    print(hwset2)
+
+
     projID= req["_id"]
 
     quantity = int(req.get("number"))
@@ -308,7 +324,7 @@ def checkout():
         res["info"]["capacity"] = hwset1.get_capacity()
         res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
 
-
+    print("This is the response")
     return jsonify(res)
 
 
@@ -316,7 +332,11 @@ def checkout():
 @cross_origin(supports_credentials=True)
 def checkin():
     req = request.get_json()
-    print("testing1: " + str(req))
+    print("This is the req")
+    print("This is HW 1")
+    print(hwset1)
+    print("This is HW 2")
+    print(hwset2)
     projID = req["_id"]
     quantity = int(req.get("number"))
 
@@ -358,7 +378,7 @@ def checkin():
         res["info"]["capacity"] = hwset1.get_capacity()
         res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
 
-
+    print("This is the response")
     return jsonify(res)
 
 
