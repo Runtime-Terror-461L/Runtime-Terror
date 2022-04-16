@@ -54,8 +54,8 @@ function Test(){
 
 const SignIn = () => {
 
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     
     async function handleSubmit(){
         console.log("You are submitting");
