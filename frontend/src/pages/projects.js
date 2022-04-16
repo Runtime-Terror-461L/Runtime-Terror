@@ -51,7 +51,7 @@ class CreateProjForm extends React.Component {
     event.preventDefault();
     alert("projid:" + this.state.projID+ " projectname:" + this.state.projName);
     //need fetch and check for existing ids and then have it go to ./project/id page
-    fetch("http://localhost:5000/create", {
+    fetch("/create", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -228,7 +228,7 @@ function ProjTable(props){
 }
 
 async function CreateData() {
-  const response = await fetch("http://localhost:5000/get-projects",
+  const response = await fetch("/get-projects",
   {
     method: "GET",
     headers: {

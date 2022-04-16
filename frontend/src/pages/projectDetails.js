@@ -40,7 +40,7 @@ const ProjectViewDetails = () => {
       // fetch('route - api/get_hwset2')
       //     .then(response => response.json())
       //     .then(data => setHWSet2(data));
-      fetch("http://localhost:5000/get-project-sets", {
+      fetch("/get-project-sets", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -75,7 +75,7 @@ const ProjectViewDetails = () => {
     const checkOut = async () => {
   		console.log(number + " " + name)
       // TODO: checkout via POST (pass number and name)
-      fetch("http://localhost:5000/checkout", {
+      fetch("/checkout", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -107,7 +107,7 @@ const ProjectViewDetails = () => {
     const checkIn = async () => {
   		console.log(number + " " + name)
       // TODO: checkout via POST (pass number and name)
-      fetch("http://localhost:5000/checkin", {
+      fetch("/checkin", {
         method: "POST",
         headers: {
           "Content-type": "application/json",

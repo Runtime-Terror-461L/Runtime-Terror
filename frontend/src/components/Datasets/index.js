@@ -32,7 +32,7 @@ function DatasetTable(){
 
 
 async function CreateData() {
-    const response = await fetch("http://127.0.0.1:5000/DataSetMetadata");
+    const response = await fetch("/DataSetMetadata");
     const data = await response.json();
     const result = data.Metadata;
     console.log(result);

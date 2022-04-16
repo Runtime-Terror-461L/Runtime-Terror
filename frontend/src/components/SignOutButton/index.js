@@ -4,7 +4,7 @@ import React from "react";
 function SignOutButton(){
 
     function SignOutUser(){
-        fetch("http://localhost:5000/signout", {
+        fetch("/signout", {
             method: 'Post',
             headers: {
                 'Content-Type': 'application/json',
