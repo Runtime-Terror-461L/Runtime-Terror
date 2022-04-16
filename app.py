@@ -331,9 +331,9 @@ def checkout():
         else:
             res["error"] = True
         collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
-        res["info"]["availability"] = hwset1.get_availability()
-        res["info"]["capacity"] = hwset1.get_capacity()
-        res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
+        res["info"]["availability"] = hwset2.get_availability()
+        res["info"]["capacity"] = hwset2.get_capacity()
+        res["info"]["checkedout_qty"] = hwset2.get_checkedout_qty(projID)
 
     print("This is the response ")
     print(res)
@@ -386,9 +386,9 @@ def checkin():
         else:
             res["error"] = True
         collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
-        res["info"]["availability"] = hwset1.get_availability()
-        res["info"]["capacity"] = hwset1.get_capacity()
-        res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
+        res["info"]["availability"] = hwset2.get_availability()
+        res["info"]["capacity"] = hwset2.get_capacity()
+        res["info"]["checkedout_qty"] = hwset2.get_checkedout_qty(projID)
 
     print("This is the response, ", res)
     return jsonify(res)
