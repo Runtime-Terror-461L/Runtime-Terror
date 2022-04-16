@@ -29,7 +29,7 @@ const ProjectViewDetails = () => {
     const [projectName, setProjectName] = useState("")
     const [projectDesc, setProjectDesc] = useState("")
     const [name, setName] = useState("");
-		const [number, setNumber] = useState("0");
+		const [number, setNumber] = useState("");
     const [hwset1, setHWSet1] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
     const [hwset2, setHWSet2] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
 

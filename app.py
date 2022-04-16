@@ -40,6 +40,7 @@ users = dbname.get_collection("Users")
 collection_Projects = dbname["Projects"]
 collection_HardwareSets = dbname["HardwareSets"]
 
+
 print("Users are: ", users)
 print("Projects are: ", collection_Projects)
 print("HW sets are: ", collection_HardwareSets)
@@ -55,7 +56,7 @@ for hardware in hardwareSets:
 print(hwset1)
 print(hwset2)
 
-@app.route("/")
+@app.route("/*")
 @cross_origin(supports_credentials=True)
 def index():
     return send_from_directory(app.static_folder, "index.html")
