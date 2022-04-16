@@ -54,11 +54,9 @@ const SignUp = () => {
 
         const fetchResponse = await SignUpUser(credentials);
         if(fetchResponse.hasOwnProperty('email')){
-            setResponseText(fetchResponse.email);
             alert("You have successfully signed up with email: "+fetchResponse.email);
         }
         else if(fetchResponse.hasOwnProperty('error')){
-            setResponseText(fetchResponse.error);
             alert(fetchResponse.error);
         }
         console.log(fetchResponse);
