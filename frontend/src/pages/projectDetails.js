@@ -74,6 +74,9 @@ const ProjectViewDetails = () => {
     }
     const checkOut = async () => {
   		console.log(number + " " + name)
+      if(name == ""){
+        alert("Please specify a hardware set to check out");
+      }
       // TODO: checkout via POST (pass number and name)
       fetch("/checkout", {
         method: "POST",
@@ -106,7 +109,9 @@ const ProjectViewDetails = () => {
 		}
     const checkIn = async () => {
   		console.log(number + " " + name)
-      // TODO: checkout via POST (pass number and name)
+      if(name == ""){
+      alert("Please specify a hardware set to check in");
+      }
       fetch("/checkin", {
         method: "POST",
         headers: {

@@ -343,7 +343,7 @@ def checkout():
 @cross_origin(supports_credentials=True)
 def checkin():
     req = request.get_json()
-    print("This is the req")
+    print("This is the req", req)
     print("This is HW 1")
     print(hwset1)
     print("This is HW 2")
