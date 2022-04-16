@@ -8,7 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import InputLabel from "@mui/material/InputLabel";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -20,26 +20,135 @@ import MultipleSelectCheckmarks from "./checkout"
 import {useLocation} from 'react-router-dom';
 
 
+
+
 const ProjectViewDetails = () => {
 
-  const location = useLocation();
-  const ID = location.state.id;
-  console.log("Hello This is input from other file");
-  console.log(location.state.id);
+    const {state} = useLocation()
+
+    const [projectName, setProjectName] = useState("")
+    const [projectDesc, setProjectDesc] = useState("")
+    const [name, setName] = useState("");
+		const [number, setNumber] = useState("0");
+    const [hwset1, setHWSet1] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
+    const [hwset2, setHWSet2] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
+
+    const updateData = () => { // TODO: update route names based on backend
+      // fetch('route - api/get_hwset1')
+      //     .then(response => response.json()) // assumes data is formatted like {"hwset1": data={"capacity": 100, "availability": 100, "checkedout_qty": 0}}
+      //     .then(data => setHWSet1(data));
+      // fetch('route - api/get_hwset2')
+      //     .then(response => response.json())
+      //     .then(data => setHWSet2(data));
+      fetch("http://localhost:5000/get-project-sets", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        credentials: "include",
+        body: JSON.stringify({_id: state.id})
+      }).then(
+        res => res.json()
+      ).then(
+        data => {
+          console.log("This is data from get-project-sets")
+          console.log(data)
+          setHWSet1(data.hw1_info)
+          setHWSet2(data.hw2_info)
+          setProjectName(data.proj_info.name)
+          setProjectDesc(data.proj_info.description)
+        }
+      )
+    }
+
+    useEffect(()=>{
+      updateData();
+    }, [])   
+    
+    const numberChange = event => {
+  		setNumber(event.target.value);
+		};
+    const nameChange = (name) => {
+    	setName(name);
+    }
+    const checkOut = async () => {
+  		console.log(number + " " + name)
+      // TODO: checkout via POST (pass number and name)
+      fetch("http://localhost:5000/checkout", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          _id: state.id,
+          number: number,
+          name: name
+        })
+      }).then(
+        res => res.json()
+      ).then(
+        data => {
+          if(data.error){
+            alert("Check out exceeds availability")
+          }
+          if(data.set_name === "Hardware Set 1"){
+            setHWSet1(data.info)
+          }
+          if(data.set_name === "Hardware Set 2"){
+            setHWSet2(data.info)
+          }
+        }
+      )
+      updateData();
+		}
+    const checkIn = async () => {
+  		console.log(number + " " + name)
+      // TODO: checkout via POST (pass number and name)
+      fetch("http://localhost:5000/checkin", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          _id: state.id,
+          number: number,
+          name: name
+        })
+      }).then(
+        res => res.json()
+      ).then(
+        data => {
+          if(data.error){
+            alert("Check in exceeds checkedout_qty")
+          }
+          if(data.set_name === "Hardware Set 1"){
+            setHWSet1(data.info)
+          }
+          if(data.set_name === "Hardware Set 2"){
+            setHWSet2(data.info)
+          }
+        }
+      )
+      updateData();
+		}
     return (
       <div>
-      <h1>{location.state.id}</h1>
 
       <Grid container>
 
       <Grid item xs={12} md={4} align="center">
 
         <Paper elevation={3} sx={{width:6/7}} >
-          <h2 align="center">Project Name: UT AWS #1101</h2>
+          <h2 align="center">Project Name: {projectName}, ID: {state.id}</h2>
         </Paper>
         <Paper elevation={3} sx={{width:6/7}} >
           <h2 align="center">Description</h2>
-          <p style = {{ padding:10 }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          <p style = {{ padding:10 }}>{projectDesc}</p>
         </Paper>
         <Button variant="contained" color="primary">
           Home
@@ -51,11 +160,11 @@ const ProjectViewDetails = () => {
             <h2 align="center">Current Hardware Sets</h2>
             <List aria-label="mailbox folders">
               <ListItem button>
-                <ListItemText primary="Hardware Set 1" />
+                <ListItemText primary="Hardware Set 1" secondary={'Availability: ' + hwset1['availability'] + ', Capacity: ' + hwset1['capacity']} />
               </ListItem>
               <Divider />
               <ListItem button divider>
-                <ListItemText primary="Hardware Set 2" />
+                <ListItemText primary="Hardware Set 2" secondary={'Availability: ' + hwset2['availability'] + ', Capacity: ' + hwset2['capacity']} />
               </ListItem>
 
             </List>
@@ -65,30 +174,33 @@ const ProjectViewDetails = () => {
             <h2 align="center">List of Checked Out Sets</h2>
             <List aria-label="mailbox folders">
               <ListItem button>
-                <ListItemText primary="Hardware Set 1" />
+                {/* <ListItemText primary="Hardware Set 1" secondary={'Checked out quantity: ' + (hwset1["checkedout_qty"][state.id]==undefined)? 0 : hwset1["checkedout_qty"][state.id]}/> */}
+                <ListItemText primary="Hardware Set 1" secondary={'Checked out quantity: ' + hwset1["checkedout_qty"]}/>
               </ListItem>
               <Divider />
               <ListItem button divider>
-                <ListItemText primary="Hardware Set 2" />
+                {/* <ListItemText primary="Hardware Set 2" secondary={'Checked out quantity: ' + (hwset2["checkedout_qty"][state.id]==undefined)? 0 : hwset2["checkedout_qty"][state.id]}/> */}
+                <ListItemText primary="Hardware Set 2" secondary={'Checked out quantity: ' + hwset2["checkedout_qty"]}/>
               </ListItem>
 
             </List>
           </Paper>
           <Paper elevation={3} sx={{width:13/14}} >
             <h2 align="center">Checkout/Return Hardware</h2>
-            <MultipleSelectCheckmarks/>
+            <MultipleSelectCheckmarks onChange={nameChange}/>
             <TextField
           id="outlined-number"
           label="Number"
           type="number"
+          onChange={numberChange}
           InputLabelProps={{
             shrink: true,
           }} style = {{ marginTop:10, marginBottom:10}}
         /><br/>
-            <Button variant="contained" color="primary"  style = {{ marginBottom:10, marginRight:10 }}>
+            <Button variant="contained" onClick={checkOut} color="primary"  style = {{ marginBottom:10, marginRight:10 }}>
               Checkout
             </Button>
-            <Button variant="contained" color="primary"  style = {{ marginBottom:10 }}>
+            <Button variant="contained" onClick={checkIn} color="primary"  style = {{ marginBottom:10 }}>
               Checkin
             </Button>
 
