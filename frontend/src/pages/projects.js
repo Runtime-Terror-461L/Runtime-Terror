@@ -49,6 +49,10 @@ class CreateProjForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    if(this.state.projID == '' || this.state.projName == ''){
+      alert("Name and ID are required fields, please fill them before trying to create a project")
+      return
+    }
     alert("projid:" + this.state.projID+ " projectname:" + this.state.projName);
     //need fetch and check for existing ids and then have it go to ./project/id page
     fetch("/create", {
@@ -129,6 +133,10 @@ class ExistingProjForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    if(this.state.projID == ''){
+      alert("Please Specify a Project ID to join");
+      return
+    }
     //include fetch instead of alert and check for incorrect ids and go to project/id page if it exists
     fetch("/join", {
       method: "POST",

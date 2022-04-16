@@ -69,7 +69,7 @@ const SignIn = () => {
         if(fetchResponse.hasOwnProperty('error')){
             alert(fetchResponse.error);
         }else if(fetchResponse.hasOwnProperty('email')){
-            alert(fetchResponse.email);
+            alert("Successfully signed into "+fetchResponse.email);
         }
 
         await Test();
