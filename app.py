@@ -208,7 +208,6 @@ def get_projects():
         projects = collection_Projects.find(
             {"emails": {"$elemMatch": {"email": session["user"]}}}
         )
-    print("This is the response: ", {"list": list(projects)})
     return jsonify({"list": list(projects)})
 
 
