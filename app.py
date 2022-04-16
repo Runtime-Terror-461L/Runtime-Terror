@@ -42,7 +42,7 @@ collection_HardwareSets = dbname["HardwareSets"]
 
 print("Users are: ", users)
 print("Projects are: ", collection_Projects)
-print("HW sets are: collection_HardwareSets")
+print("HW sets are: ", collection_HardwareSets)
 
 
 hardwareSets = collection_HardwareSets.find()
@@ -180,8 +180,10 @@ def create():
     print("The Request for create is ", req)
     items = collection_Projects.find({"_id": req["_id"]})
     print("The query returned ", list(items))
-    res = {"created": False}
-    if len(list(items)) == 0:
+    res = {"created": False, "reason": ""}
+    if not ("loggedIn" in session and session["loggedIn"]):
+        res["reason"] = "You cannot create a Project if you are not signed in"
+    elif len(list(items)) == 0:
         hwset1.init_project(req["_id"])
         hwset2.init_project(req["_id"])
         print(hwset1)
@@ -189,15 +191,12 @@ def create():
         print("initializing checked out to zero")
         collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
         collection_HardwareSets.replace_one({"_id": "hwset1"}, hwset1.jsonify())
-
-        if "loggedIn" in session and session["loggedIn"]:
-            print("I am logged In")
-            req["emails"] = req.setdefault("emails", [])
-            req["emails"].append({"email": session["user"]})
-        else:
-            print("Not Logged")
+        req["emails"] = req.setdefault("emails", [])
+        req["emails"].append({"email": session["user"]})
         collection_Projects.insert_one(req)
         res["created"] = True
+    else:
+        res["reason"] = "A Project with that ID has already been created, please choose another one"
     print("The response is ", res)
     return res
 

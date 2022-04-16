@@ -44,7 +44,6 @@ export default function MultipleSelectCheckmarks(props) {
         <Select
           labelId="demo-multiple-checkbox-label"
           id="demo-multiple-checkbox"
-          multiple
           value={personName}
           onChange={handleChange}
           input={<OutlinedInput label="Tag" />}
