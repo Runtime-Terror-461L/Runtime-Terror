@@ -26,7 +26,7 @@ class CreateProjForm extends React.Component {
       projID: '',
       projDescrip:'',
       projects: {},
-      error:''
+      message:''
     };
     
     this.handleChangeid = this.handleChangeid.bind(this);
@@ -64,22 +64,21 @@ class CreateProjForm extends React.Component {
     }).then((res)=>{
       if(res.ok){
         console.log("Success: ")
-        this.setState({error:""});
       }
       else{
         console.log("Failure")
-        this.setState({error:"Project was not created"});
       }
       return res
     }).then(
       res => res.json()
     ).then(
       data => {
-        //IF CREATED
-        console.log(data)
         if(data.created){
+          console.log("created")
           this.props.onChange();
         }
+        console.log("not created")
+        this.setState({message: data.reason})
       }
     )
   }
@@ -100,8 +99,8 @@ class CreateProjForm extends React.Component {
           <TextField id="outlined-basic" label="Enter Project Name" variant="outlined"  onChange={this.handleChangename} value={this.state.projName} required/>
           <TextField id="outlined-basic" label="Enter Project ID" variant="outlined" onChange={this.handleChangeid} value={this.state.projID} required/>
           <TextField id="outlined-basic" label="Enter Description" variant="outlined" multiline rows={4} value={this.state.projDescrip} onChange={this.handleChangedescrip}/>
-          { this.state.error &&
-            <h3 className="error"> { this.state.error } </h3> }
+          { this.state.message &&
+            <h3 className="error"> { this.state.message } </h3> }
           <Button variant="contained" type="submit">Confirm</Button>
         </Box>
       </div>
@@ -116,7 +115,7 @@ class ExistingProjForm extends React.Component {
     super(props);
     this.state = {
       projID: '',
-      error:''
+      message:''
     };
   
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -130,7 +129,6 @@ class ExistingProjForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    alert("projid:" + this.state.projID);
     //include fetch instead of alert and check for incorrect ids and go to project/id page if it exists
     fetch("/join", {
       method: "POST",
@@ -158,11 +156,12 @@ class ExistingProjForm extends React.Component {
         //IF JOINED
         if(data.joined){
           console.log("JOINED")
-          this.setState({ error: "" });
+          this.setState({ message: data.reason});
         }
         else{
           console.log("NOT JOINED")
-          this.setState({ error: "Project does not exist, please enter a new ID" });
+          this.setState({ message: data.reason });
+
         }
       }
     )
@@ -182,8 +181,8 @@ class ExistingProjForm extends React.Component {
           onSubmit={this.handleSubmit}
         >
           <TextField id="outlined-basic" label="Enter Project ID" variant="outlined" value={this.state.projID} onChange={this.handleChange} required/>
-          { this.state.error &&
-            <h4 className="error"> { this.state.error } </h4> }
+          { this.state.message &&
+            <h4 className="error"> { this.state.message } </h4> }
           <Button variant="contained" type="submit">Confirm</Button>
         </Box>
       </div>

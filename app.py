@@ -179,11 +179,12 @@ def create():
     req = request.get_json()
     print("The Request for create is ", req)
     items = collection_Projects.find({"_id": req["_id"]})
-    print("The query returned ", list(items))
+    listItems = list(items)
+    print("The query returned ", listItems)
     res = {"created": False, "reason": ""}
     if not ("loggedIn" in session and session["loggedIn"]):
         res["reason"] = "You cannot create a Project if you are not signed in"
-    elif len(list(items)) == 0:
+    elif len(listItems) == 0:
         hwset1.init_project(req["_id"])
         hwset2.init_project(req["_id"])
         print(hwset1)
@@ -218,15 +219,25 @@ def join():
     req = request.get_json()
     project = {}
     items = collection_Projects.find({"_id": req["_id"]})
-    res = {"joined": False}
-    for item in items:
-        project = item
-        if {"email": session["user"]} in project.get("emails", []):
-            return res
-        project["emails"] = project.setdefault("emails", [])
-        project["emails"].append({"email": session["user"]})
-        collection_Projects.replace_one({"_id": req["_id"]}, project)
-        res["joined"] = True
+    listItems = list(items)
+    res = {"joined": False, "reason": ""}
+
+    if not ("loggedIn" in session and session["loggedIn"]):
+        res["reason"] = "You cannot join a Project if you are not signed in"
+
+    elif len(listItems) == 0:
+        res["reason"] = "You cannot join this Project because a Project with this ID doesnt exist"
+
+    else:
+        for item in listItems:
+            project = item
+            if {"email": session["user"]} in project.get("emails", []):
+                return res
+            project["emails"] = project.setdefault("emails", [])
+            project["emails"].append({"email": session["user"]})
+            collection_Projects.replace_one({"_id": req["_id"]}, project)
+            res["joined"] = True
+            res["reason"] = "You have successfully joined the Project"
     return res
 
 
