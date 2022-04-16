@@ -13,6 +13,12 @@ import {
 import { useState } from 'react';
 
 function SignUpUser(credentials){
+    if(credentials.email == "" || credentials.name == "" || credentials.password == ""){
+        console.log("You haven't completed the required fields, no login");
+        return {
+            error: "You haven't completed the required fields, no login"
+        }
+    }
     const body = JSON.stringify(credentials);
     console.log("This is the body");
     console.log(body)
