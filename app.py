@@ -356,6 +356,7 @@ def checkin():
     if(quantity < 0):
         res["error"] = True
         res["error_msg"] = "You cannot check in a negative number"
+        return res
 
 
 
