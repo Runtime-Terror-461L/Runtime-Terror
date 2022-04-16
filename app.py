@@ -301,6 +301,8 @@ def checkout():
         res["error_msg"] = "You did not enter a valid integer number to checkout"
         res["error"] = True
         return res
+    if(quantity < 0):
+        res["error_msg"] = "You cannot check out a negative number"
 
     print(req)
 
@@ -348,6 +350,10 @@ def checkin():
         res["error"] = True
         res["error_msg"] = "You did not enter a valid integer number to checkout"
         return res
+
+    if(quantity < 0):
+        res["error"] = True
+        res["error_msg"] = "You cannot check in a negative number"
 
 
 
