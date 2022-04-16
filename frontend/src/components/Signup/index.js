@@ -37,7 +37,6 @@ const SignUp = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [responseText, setResponseText] = useState("");
     const [name, setName] = useState("");
 
     async function handleSubmit(){
@@ -56,9 +55,11 @@ const SignUp = () => {
         const fetchResponse = await SignUpUser(credentials);
         if(fetchResponse.hasOwnProperty('email')){
             setResponseText(fetchResponse.email);
+            alert("You have successfully signed up with email: "+fetchResponse.email);
         }
         else if(fetchResponse.hasOwnProperty('error')){
             setResponseText(fetchResponse.error);
+            alert(fetchResponse.error);
         }
         console.log(fetchResponse);
 
@@ -81,7 +82,6 @@ const SignUp = () => {
                             <SignUpInput type="password" onChange={e => setPassword(e.target.value)} required />
                             <SignUpButton type="button" onClick={() => {handleSubmit()}}>Sign Up</SignUpButton>
                             <Text>Already have an account? <a href ="/signin">Sign in</a></Text>
-                            <Text>{responseText}</Text>
                         </SignUpForm>
                     </SignUpContent>
                 </SignUpWrap>
