@@ -100,7 +100,7 @@ const ProjectViewDetails = () => {
       ).then(
         data => {
           if(data.error){
-            alert("Check out exceeds availability")
+            alert(data.error_msg)
           }
         }
       )
@@ -128,7 +128,7 @@ const ProjectViewDetails = () => {
       ).then(
         data => {
           if(data.error){
-            alert("Check in exceeds checkedout_qty")
+            alert(data.error_msg)
           }
         }
       )
