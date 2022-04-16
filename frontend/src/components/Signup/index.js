@@ -14,6 +14,8 @@ import { useState } from 'react';
 
 function SignUpUser(credentials){
     const body = JSON.stringify(credentials);
+    console.log("This is the body");
+    console.log(body)
     return fetch("/signup", {
         method: 'Post',
         headers: {
@@ -27,10 +29,10 @@ function SignUpUser(credentials){
 
 const SignUp = () => {
 
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
-    const [responseText, setResponseText] = useState();
-    const [name, setName] = useState();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [responseText, setResponseText] = useState("");
+    const [name, setName] = useState("");
 
     async function handleSubmit(){
         console.log("You are submitting");
