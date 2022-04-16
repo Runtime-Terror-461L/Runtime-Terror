@@ -33,6 +33,11 @@ const ProjectViewDetails = () => {
     const [hwset1, setHWSet1] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
     const [hwset2, setHWSet2] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
 
+    console.log("This is hwset1")
+    console.log(hwset1);
+    console.log("This is hwset2")
+    console.log(hwset2);
+
     const updateData = () => { // TODO: update route names based on backend
       // fetch('route - api/get_hwset1')
       //     .then(response => response.json()) // assumes data is formatted like {"hwset1": data={"capacity": 100, "availability": 100, "checkedout_qty": 0}}
@@ -98,9 +103,11 @@ const ProjectViewDetails = () => {
             alert("Check out exceeds availability")
           }
           if(data.set_name === "Hardware Set 1"){
+            console.log(data.set_name)
             setHWSet1(data.info)
           }
           if(data.set_name === "Hardware Set 2"){
+            console.log(data.set_name)
             setHWSet2(data.info)
           }
         }
@@ -132,9 +139,11 @@ const ProjectViewDetails = () => {
             alert("Check in exceeds checkedout_qty")
           }
           if(data.set_name === "Hardware Set 1"){
+            console.log(data.set_name)
             setHWSet1(data.info)
           }
           if(data.set_name === "Hardware Set 2"){
+            console.log(data.set_name)
             setHWSet2(data.info)
           }
         }

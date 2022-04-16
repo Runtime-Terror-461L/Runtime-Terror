@@ -335,7 +335,7 @@ def checkout():
         res["info"]["capacity"] = hwset1.get_capacity()
         res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
 
-    print("This is the response")
+    print("This is the response ", res)
     return jsonify(res)
 
 
@@ -389,7 +389,7 @@ def checkin():
         res["info"]["capacity"] = hwset1.get_capacity()
         res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
 
-    print("This is the response")
+    print("This is the response, ", res)
     return jsonify(res)
 
 
