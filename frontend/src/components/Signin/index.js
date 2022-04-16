@@ -20,7 +20,13 @@ import { Container } from 'react-bootstrap'
  */
 
 function SignInUser(credentials){
+    if(credentials.email == "" || credentials.password == ""){
+        return {
+            error: "You haven't completed the required fields, please complete all fields to sign in"
+        }
+    }
     const body = JSON.stringify(credentials);
+
     return fetch("/signin", {
         method: 'Post',
         headers: {
@@ -50,7 +56,6 @@ const SignIn = () => {
 
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
-    const [responseText, setResponseText] = useState();
     
     async function handleSubmit(){
         console.log("You are submitting");
@@ -60,13 +65,11 @@ const SignIn = () => {
             password
         }
         const fetchResponse = await SignInUser(credentials);
-        if(fetchResponse.hasOwnProperty('message')){
-            setResponseText(fetchResponse.message);
-        }
-        else if(fetchResponse.hasOwnProperty('error')){
-            setResponseText(fetchResponse.error);
+
+        if(fetchResponse.hasOwnProperty('error')){
+            alert(fetchResponse.error);
         }else if(fetchResponse.hasOwnProperty('email')){
-            setResponseText(fetchResponse.email);
+            alert(fetchResponse.email);
         }
 
         await Test();
@@ -115,7 +118,6 @@ const SignIn = () => {
                             <SignInInput type="password" onChange={e => setPassword(e.target.value)}required />
                             <SignInButton type="button" onClick={() => {handleSubmit()}}>Sign In</SignInButton>
                             <Text>Need an account? <a href ="/signup">Sign up</a></Text>
-                            <Text>{responseText}</Text>
                         </SignInForm>
                     </SignInContent>
                 </SignInWrap>

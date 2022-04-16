@@ -16,7 +16,7 @@ function SignUpUser(credentials){
     if(credentials.email == "" || credentials.name == "" || credentials.password == ""){
         console.log("You haven't completed the required fields, no login");
         return {
-            error: "You haven't completed the required fields, no login"
+            error: "You haven't completed the required fields, please complete all fields to sign up"
         }
     }
     const body = JSON.stringify(credentials);
