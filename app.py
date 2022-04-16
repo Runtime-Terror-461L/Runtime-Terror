@@ -302,7 +302,9 @@ def checkout():
         res["error"] = True
         return res
     if(quantity < 0):
+        res["error"] = True
         res["error_msg"] = "You cannot check out a negative number"
+        return res
 
     print(req)
 
