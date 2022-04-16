@@ -132,7 +132,7 @@ class ExistingProjForm extends React.Component {
     event.preventDefault();
     alert("projid:" + this.state.projID);
     //include fetch instead of alert and check for incorrect ids and go to project/id page if it exists
-    fetch("http://localhost:5000/join", {
+    fetch("/join", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -238,6 +238,7 @@ async function CreateData() {
     credentials: "include",
   }
   );
+  console.log(response);
   const data = await response.json();
   //const result = data.Metadata;
   console.log("This is the response from the server")
