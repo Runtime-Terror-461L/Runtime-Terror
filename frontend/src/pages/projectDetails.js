@@ -102,16 +102,6 @@ const ProjectViewDetails = () => {
           if(data.error){
             alert("Check out exceeds availability")
           }
-          if(data.set_name === "Hardware Set 1"){
-            console.log("This is the HW1 Checkout info")
-            console.log(data.info)
-            setHWSet1(data.info)
-          }
-          if(data.set_name === "Hardware Set 2"){
-            console.log("This is the HW2 Checkout info")
-            console.log(data.set_name)
-            setHWSet2(data.info)
-          }
         }
       )
       updateData();
@@ -139,17 +129,6 @@ const ProjectViewDetails = () => {
         data => {
           if(data.error){
             alert("Check in exceeds checkedout_qty")
-          }
-          if(data.set_name === "Hardware Set 1"){
-            console.log("This is the HW1 Checkin info")
-            console.log(data.set_name)
-            setHWSet1(data.info)
-            
-          }
-          if(data.set_name === "Hardware Set 2"){
-            console.log("This is the HW2 Checkin info")
-            console.log(data.set_name)
-            setHWSet2(data.info)
           }
         }
       )

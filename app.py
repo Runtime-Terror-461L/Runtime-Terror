@@ -293,49 +293,38 @@ def checkout():
 
 
     projID= req["_id"]
+    res = {"error": False, "error_msg": ""}
 
-    quantity = int(req.get("number"))
+    try:
+        quantity = int(req.get("number"))
+    except ValueError:
+        res["error_msg"] = "You did not enter a valid integer number to checkout"
+        res["error"] = True
+        return res
+
     print(req)
 
-    if(req["name"] == "Hardware Set 1"):
-        orig_availability = hwset1.get_availability()
-        orig_capacity = hwset1.get_capacity()
-        orig_checked_out = hwset1.get_checkedout_qty(projID)
-    else:
-        orig_availability = hwset2.get_availability()
-        orig_capacity = hwset2.get_capacity()
-        orig_checked_out = hwset2.get_checkedout_qty(projID)
 
-    res = {"error": False,
-           "info": {
-               "availability": orig_availability,
-               "capacity": orig_capacity,
-               "checkedout_qty": orig_checked_out,
-           },
-           "set_name": req["name"]
-    }
+
 
     if "Hardware Set 1" in req["name"]:
         if hwset1.check_out(quantity, projID) == 0:
             res["error"] = False
         else:
             res["error"] = True
+            res["error_msg"] = "You attempted to checkout more than there was available, you were given the maximum available"
         collection_HardwareSets.replace_one({"_id": "hwset1"}, hwset1.jsonify())
-        res["info"]["availability"] = hwset1.get_availability()
-        res["info"]["capacity"] = hwset1.get_capacity()
-        res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
 
     if "Hardware Set 2" in req["name"]:
         if hwset2.check_out(quantity, projID) == 0:
             res["error"] = False
         else:
             res["error"] = True
-        collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
-        res["info"]["availability"] = hwset2.get_availability()
-        res["info"]["capacity"] = hwset2.get_capacity()
-        res["info"]["checkedout_qty"] = hwset2.get_checkedout_qty(projID)
+            res["error_msg"] = "You attempted to checkout more than there was available, you were given the maximum available"
 
-    print("This is the response ")
+        collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
+
+    print("This is the response")
     print(res)
     return jsonify(res)
 
@@ -349,46 +338,35 @@ def checkin():
     print(hwset1)
     print("This is HW 2")
     print(hwset2)
+
     projID = req["_id"]
-    quantity = int(req.get("number"))
+    res = {"error": False, "error_msg": ""}
 
-    if(req["name"] == "Hardware Set 1"):
-        orig_availability = hwset1.get_availability()
-        orig_capacity = hwset1.get_capacity()
-        orig_checked_out = hwset1.get_checkedout_qty(projID)
-    else:
-        orig_availability = hwset2.get_availability()
-        orig_capacity = hwset2.get_capacity()
-        orig_checked_out = hwset2.get_checkedout_qty(projID)
+    try:
+        quantity = int(req.get("number"))
+    except ValueError:
+        res["error"] = True
+        res["error_msg"] = "You did not enter a valid integer number to checkout"
+        return res
 
-    res = {"error": False,
-           "info": {
-               "availability": orig_availability,
-               "capacity": orig_capacity,
-               "checkedout_qty": orig_checked_out,
-           },
-           "set_name": req["name"]
-    }
+
+
 
     if "Hardware Set 1" in req["name"]:
         if hwset1.check_in(quantity, projID) == 0:
             res["error"] = False
         else:
             res["error"] = True
+            res["error_msg"] = "You attempted to check in more than were checked out, all of yours were checked in"
         collection_HardwareSets.replace_one({"_id": "hwset1"}, hwset1.jsonify())
-        res["info"]["availability"] = hwset1.get_availability()
-        res["info"]["capacity"] = hwset1.get_capacity()
-        res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
 
     if "Hardware Set 2" in req["name"]:
         if hwset2.check_in(quantity, projID) == 0:
             res["error"] = False
         else:
             res["error"] = True
+            res["error_msg"] = "You attempted to check in more than were checked out, all of yours were checked in"
         collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
-        res["info"]["availability"] = hwset2.get_availability()
-        res["info"]["capacity"] = hwset2.get_capacity()
-        res["info"]["checkedout_qty"] = hwset2.get_checkedout_qty(projID)
 
     print("This is the response, ", res)
     return jsonify(res)
