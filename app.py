@@ -184,6 +184,8 @@ def create():
     if len(list(items)) == 0:
         hwset1.init_project(req["_id"])
         hwset2.init_project(req["_id"])
+        print(hwset1)
+        print(hwset2)
         print("initializing checked out to zero")
         collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
         collection_HardwareSets.replace_one({"_id": "hwset1"}, hwset1.jsonify())
