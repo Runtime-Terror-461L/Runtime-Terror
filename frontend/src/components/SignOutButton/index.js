@@ -3,7 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 function SignOutButton(){
-
+    let navigate = useNavigate();
     function SignOutUser(){
         fetch("/signout", {
             method: 'Post',
@@ -14,7 +14,7 @@ function SignOutButton(){
             credentials: 'include',
         }).then(res => res.json()
         ).then(data => alert(data.message));
-        let navigate = useNavigate();
+        
         navigate('/');
 
         
