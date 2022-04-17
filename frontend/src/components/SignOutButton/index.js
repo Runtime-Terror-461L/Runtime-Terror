@@ -1,5 +1,6 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function SignOutButton(){
 
@@ -13,7 +14,8 @@ function SignOutButton(){
             credentials: 'include',
         }).then(res => res.json()
         ).then(data => alert(data.message));
-        window.location.reload();
+        let navigate = useNavigate();
+        navigate('/');
 
         
     }

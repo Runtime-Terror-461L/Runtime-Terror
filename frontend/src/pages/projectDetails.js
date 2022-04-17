@@ -148,9 +148,6 @@ const ProjectViewDetails = () => {
           <h2 align="center">Description</h2>
           <p style = {{ padding:10 }}>{projectDesc}</p>
         </Paper>
-        <Button variant="contained" color="primary">
-          Home
-        </Button>
       </Grid>
         <Grid item xs={12} md={8} align="center"  style = {{ paddingBottom:10 }}>
 
