@@ -56,7 +56,7 @@ for hardware in hardwareSets:
         hwset2 = hardwareSet.HWSet(hardware)
 print(hwset1)
 print(hwset2)
-
+@app.route("/datasets")
 @app.route("/")
 @cross_origin(supports_credentials=True)
 def index():
