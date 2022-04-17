@@ -22,7 +22,7 @@ function SignUpUser(credentials){
     const body = JSON.stringify(credentials);
     console.log("This is the body");
     console.log(body)
-    return fetch("/signup", {
+    return fetch("/api-signup", {
         method: 'Post',
         headers: {
             'Content-Type': 'application/json',

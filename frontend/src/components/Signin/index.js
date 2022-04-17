@@ -27,7 +27,7 @@ function SignInUser(credentials){
     }
     const body = JSON.stringify(credentials);
 
-    return fetch("/signin", {
+    return fetch("/api-signin", {
         method: 'Post',
         headers: {
             'Content-Type': 'application/json',
@@ -39,18 +39,6 @@ function SignInUser(credentials){
     
 }
 
-function Test(){
-    const a = fetch("/test", {
-        method: 'Post',
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin':'*',            
-        },
-        credentials: 'include'
-    })
-    console.log(a);
-
-}
 
 const SignIn = () => {
 
@@ -71,8 +59,6 @@ const SignIn = () => {
         }else if(fetchResponse.hasOwnProperty('email')){
             alert("Successfully signed into "+fetchResponse.email);
         }
-
-        await Test();
 
         console.log(fetchResponse);
 

@@ -56,8 +56,12 @@ for hardware in hardwareSets:
         hwset2 = hardwareSet.HWSet(hardware)
 print(hwset1)
 print(hwset2)
+
 @app.route("/datasets")
 @app.route("/")
+@app.route("/signin")
+@app.route("/projects")
+@app.route("/project_details")
 @cross_origin(supports_credentials=True)
 def index():
     return send_from_directory(app.static_folder, "index.html")
@@ -89,7 +93,7 @@ def returnMetadata():
     return response
 
 
-@app.route("/signup", methods=["post"])
+@app.route("/api-signup", methods=["post"])
 @cross_origin(supports_credentials=True)
 def signUp():
     # user input of signup page
@@ -128,7 +132,7 @@ def signUp():
         return response, 200
 
 
-@app.route("/signin", methods=["post"])
+@app.route("/api-signin", methods=["post"])
 @cross_origin(supports_credentials=True)
 def signIn():
     info = json.loads(request.data)
@@ -164,15 +168,6 @@ def signOut():
     return jsonify({"message": "user logged out"}), 200
 
 
-@app.route("/test", methods=["post"])
-@cross_origin(supports_credentials=True)
-def test():
-    print("doing test")
-    print(session)
-    # print(session['loggedIn'])
-    print(session["user"])
-    response = jsonify({"message": "test"})
-    return response, 200
 
 
 @app.route("/create", methods=["POST"])
