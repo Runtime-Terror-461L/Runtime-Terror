@@ -39,6 +39,7 @@ dbname = Client.get_database("EE461L_Project")
 users = dbname.get_collection("Users")
 collection_Projects = dbname["Projects"]
 collection_HardwareSets = dbname["HardwareSets"]
+Kaggle_collection = dbname["Kaggle"]
 
 
 print("Users are: ", users)
@@ -56,35 +57,35 @@ for hardware in hardwareSets:
 print(hwset1)
 print(hwset2)
 
-@app.route("/*")
+@app.route("/")
 @cross_origin(supports_credentials=True)
 def index():
     return send_from_directory(app.static_folder, "index.html")
 
 
-memoizedDataResponse = None
 @app.route("/DataSetMetadata")
 @cross_origin(supports_credentials=True)
 def returnMetadata():
-    global memoizedDataResponse
-    if memoizedDataResponse != None:
-        return memoizedDataResponse
 
     data = {}
-    list1 = api.dataset_list()
+    datasets = list(Kaggle_collection.find({}))
     for i in range(5):
-        dataset = list1[i]
+        document = datasets[i]
+
+        dataset_name = document["name"]
+        download_link = document["link"]
+        dataset = api.dataset_view(dataset_name)
+
         data[str(i)] = {}
         data[str(i)]["name"] = str(dataset).split("/")[-1]
         data[str(i)]["filesize"] = str(dataset.size)
         data[str(i)]["tags"] = str(dataset.tags)
-        data[str(i)]["download"] = (
-            "https://www.kaggle.com/" + str(dataset) + "/download"
-        )
-    response = flask.jsonify({"Metadata": data})
+        data[str(i)]["download"] = download_link
+
     print(data)
+
+    response = jsonify({"Metadata": data})
     print(response)
-    memoizedDataResponse = response
     return response
 
 
