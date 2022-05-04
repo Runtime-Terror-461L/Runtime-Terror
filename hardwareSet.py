@@ -22,7 +22,6 @@ class HWSet:
     def init_project(self, id):
         self.checkedout_qty[id] = 0
 
-
     def check_out(self, qty, id):
         if self.availability < qty:
             self.checkedout_qty[id] += self.availability
