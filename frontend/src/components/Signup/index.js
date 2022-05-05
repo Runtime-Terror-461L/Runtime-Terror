@@ -13,8 +13,16 @@ import {
 import { useState } from 'react';
 
 function SignUpUser(credentials){
+    if(credentials.email == "" || credentials.name == "" || credentials.password == ""){
+        console.log("You haven't completed the required fields, no login");
+        return {
+            error: "You haven't completed the required fields, please complete all fields to sign up"
+        }
+    }
     const body = JSON.stringify(credentials);
-    return fetch("http://localhost:5000/signup", {
+    console.log("This is the body");
+    console.log(body)
+    return fetch("/api-signup", {
         method: 'Post',
         headers: {
             'Content-Type': 'application/json',
@@ -27,10 +35,9 @@ function SignUpUser(credentials){
 
 const SignUp = () => {
 
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
-    const [responseText, setResponseText] = useState();
-    const [name, setName] = useState();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
 
     async function handleSubmit(){
         console.log("You are submitting");
@@ -47,10 +54,10 @@ const SignUp = () => {
 
         const fetchResponse = await SignUpUser(credentials);
         if(fetchResponse.hasOwnProperty('email')){
-            setResponseText(fetchResponse.email);
+            alert("You have successfully signed up with email: "+fetchResponse.email);
         }
         else if(fetchResponse.hasOwnProperty('error')){
-            setResponseText(fetchResponse.error);
+            alert(fetchResponse.error);
         }
         console.log(fetchResponse);
 
@@ -73,7 +80,6 @@ const SignUp = () => {
                             <SignUpInput type="password" onChange={e => setPassword(e.target.value)} required />
                             <SignUpButton type="button" onClick={() => {handleSubmit()}}>Sign Up</SignUpButton>
                             <Text>Already have an account? <a href ="/signin">Sign in</a></Text>
-                            <Text>{responseText}</Text>
                         </SignUpForm>
                     </SignUpContent>
                 </SignUpWrap>

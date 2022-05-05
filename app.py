@@ -39,7 +39,13 @@ dbname = Client.get_database("EE461L_Project")
 users = dbname.get_collection("Users")
 collection_Projects = dbname["Projects"]
 collection_HardwareSets = dbname["HardwareSets"]
-print(users)
+Kaggle_collection = dbname["Kaggle"]
+
+
+print("Users are: ", users)
+print("Projects are: ", collection_Projects)
+print("HW sets are: ", collection_HardwareSets)
+
 
 hardwareSets = collection_HardwareSets.find()
 hwset1, hwset2 = None, None
@@ -51,44 +57,49 @@ for hardware in hardwareSets:
 print(hwset1)
 print(hwset2)
 
+@app.route("/datasets")
 @app.route("/")
+@app.route("/signin")
+@app.route("/signup")
+@app.route("/projects")
+@app.route("/project_details")
 @cross_origin(supports_credentials=True)
 def index():
     return send_from_directory(app.static_folder, "index.html")
 
 
-memoizedDataResponse = None
 @app.route("/DataSetMetadata")
 @cross_origin(supports_credentials=True)
 def returnMetadata():
-    global memoizedDataResponse
-    if memoizedDataResponse != None:
-        return memoizedDataResponse
 
     data = {}
-    list1 = api.dataset_list()
+    datasets = list(Kaggle_collection.find({}))
     for i in range(5):
-        dataset = list1[i]
+        document = datasets[i]
+
+        dataset_name = document["name"]
+        download_link = document["link"]
+        dataset = api.dataset_view(dataset_name)
+
         data[str(i)] = {}
         data[str(i)]["name"] = str(dataset).split("/")[-1]
         data[str(i)]["filesize"] = str(dataset.size)
         data[str(i)]["tags"] = str(dataset.tags)
-        data[str(i)]["download"] = (
-            "https://www.kaggle.com/" + str(dataset) + "/download"
-        )
-    response = flask.jsonify({"Metadata": data})
+        data[str(i)]["download"] = download_link
+
     print(data)
+
+    response = jsonify({"Metadata": data})
     print(response)
-    memoizedDataResponse = response
     return response
 
 
-@app.route("/signup", methods=["post"])
+@app.route("/api-signup", methods=["post"])
 @cross_origin(supports_credentials=True)
 def signUp():
     # user input of signup page
     info = json.loads(request.data)
-    print(info)
+    print("The Request for Sign Up is ", info)
     name = info["name"]
     email = info["email"]
     password = pbkdf2_sha256.hash(info["password"])
@@ -122,12 +133,11 @@ def signUp():
         return response, 200
 
 
-@app.route("/signin", methods=["post"])
+@app.route("/api-signin", methods=["post"])
 @cross_origin(supports_credentials=True)
 def signIn():
-    print(request)
     info = json.loads(request.data)
-    print(info)
+    print("request for sign In is ", info)
     email = info["email"]
     password = info["password"]
 
@@ -142,12 +152,12 @@ def signIn():
         print(session["loggedIn"])
         print(session["user"])
         response = jsonify({"email": email})
-        print(response.headers)
+        print("The response is ", response)
         return response, 200
     # incorrect username or password
     else:
         response = jsonify({"error": "email and/or password are incorrect"})
-        print(response.headers)
+        print("The response is ", response)
         return response, 401
 
 
@@ -159,37 +169,34 @@ def signOut():
     return jsonify({"message": "user logged out"}), 200
 
 
-@app.route("/test", methods=["post"])
-@cross_origin(supports_credentials=True)
-def test():
-    print("doing test")
-    print(session)
-    # print(session['loggedIn'])
-    print(session["user"])
-    response = jsonify({"message": "test"})
-    return response, 200
 
 
 @app.route("/create", methods=["POST"])
 @cross_origin(supports_credentials=True)
 def create():
     req = request.get_json()
+    print("The Request for create is ", req)
     items = collection_Projects.find({"_id": req["_id"]})
-    res = {"created": False}
-    if len(list(items)) == 0:
+    listItems = list(items)
+    print("The query returned ", listItems)
+    res = {"created": False, "reason": ""}
+    if not ("loggedIn" in session and session["loggedIn"]):
+        res["reason"] = "You cannot create a Project if you are not signed in"
+    elif len(listItems) == 0:
         hwset1.init_project(req["_id"])
         hwset2.init_project(req["_id"])
+        print(hwset1)
+        print(hwset2)
+        print("initializing checked out to zero")
         collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
         collection_HardwareSets.replace_one({"_id": "hwset1"}, hwset1.jsonify())
-
-        if "loggedIn" in session and session["loggedIn"]:
-            req["emails"] = req.setdefault("emails", [])
-            req["emails"].append({"email": session["user"]})
-            print(req)
-        else:
-            print("Not Logged")
+        req["emails"] = req.setdefault("emails", [])
+        req["emails"].append({"email": session["user"]})
         collection_Projects.insert_one(req)
         res["created"] = True
+    else:
+        res["reason"] = "A Project with that ID has already been created, please choose another one"
+    print("The response is ", res)
     return res
 
 
@@ -201,7 +208,7 @@ def get_projects():
         projects = collection_Projects.find(
             {"emails": {"$elemMatch": {"email": session["user"]}}}
         )
-    return {"list": list(projects)}
+    return jsonify({"list": list(projects)})
 
 
 @app.route("/join", methods=["POST"])
@@ -210,22 +217,34 @@ def join():
     req = request.get_json()
     project = {}
     items = collection_Projects.find({"_id": req["_id"]})
-    res = {"joined": False}
-    for item in items:
-        project = item
-        if {"email": session["user"]} in project.get("emails", []):
-            return res
-        project["emails"] = project.setdefault("emails", [])
-        project["emails"].append({"email": session["user"]})
-        collection_Projects.replace_one({"_id": req["_id"]}, project)
-        res["joined"] = True
+    listItems = list(items)
+    res = {"joined": False, "reason": ""}
+
+    if not ("loggedIn" in session and session["loggedIn"]):
+        res["reason"] = "You cannot join a Project if you are not signed in"
+
+    elif len(listItems) == 0:
+        res["reason"] = "You cannot join this Project because a Project with this ID doesnt exist"
+
+    else:
+        for item in listItems:
+            project = item
+            if {"email": session["user"]} in project.get("emails", []):
+                return res
+            project["emails"] = project.setdefault("emails", [])
+            project["emails"].append({"email": session["user"]})
+            collection_Projects.replace_one({"_id": req["_id"]}, project)
+            res["joined"] = True
+            res["reason"] = "You have successfully joined the Project"
     return res
 
 
 @app.route("/get-project-sets", methods=["POST"])
 @cross_origin(supports_credentials=True)
 def get_project():
+
     req = request.get_json()
+    print("This is the request", req)
     projID = req["_id"]
     items = collection_Projects.find({"_id": projID})
     name= ""
@@ -256,7 +275,7 @@ def get_project():
 
 
     }
-
+    print("This is the response", res)
     return jsonify(res)
 
 
@@ -264,51 +283,51 @@ def get_project():
 @cross_origin(supports_credentials=True)
 def checkout():
     req = request.get_json()
-    print("testing1: " + str(req))
-    projID= req["_id"]
+    print("This is the checkout request", req)
+    print("This is HW 1")
+    print(hwset1)
+    print("This is HW 2")
+    print(hwset2)
 
-    quantity = int(req.get("number"))
+
+    projID= req["_id"]
+    res = {"error": False, "error_msg": ""}
+
+    try:
+        quantity = int(req.get("number"))
+    except ValueError:
+        res["error_msg"] = "You did not enter a valid integer number to checkout"
+        res["error"] = True
+        return res
+    if(quantity < 0):
+        res["error"] = True
+        res["error_msg"] = "You cannot check out a negative number"
+        return res
+
     print(req)
 
-    if(req["name"] == "Hardware Set 1"):
-        orig_availability = hwset1.get_availability()
-        orig_capacity = hwset1.get_capacity()
-        orig_checked_out = hwset1.get_checkedout_qty(projID)
-    else:
-        orig_availability = hwset2.get_availability()
-        orig_capacity = hwset2.get_capacity()
-        orig_checked_out = hwset2.get_checkedout_qty(projID)
 
-    res = {"error": False,
-           "info": {
-               "availability": orig_availability,
-               "capacity": orig_capacity,
-               "checkedout_qty": orig_checked_out,
-           },
-           "set_name": req["name"]
-    }
+
 
     if "Hardware Set 1" in req["name"]:
         if hwset1.check_out(quantity, projID) == 0:
             res["error"] = False
         else:
             res["error"] = True
+            res["error_msg"] = "You attempted to checkout more than there was available, you were given the maximum available"
         collection_HardwareSets.replace_one({"_id": "hwset1"}, hwset1.jsonify())
-        res["info"]["availability"] = hwset1.get_availability()
-        res["info"]["capacity"] = hwset1.get_capacity()
-        res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
 
     if "Hardware Set 2" in req["name"]:
         if hwset2.check_out(quantity, projID) == 0:
             res["error"] = False
         else:
             res["error"] = True
+            res["error_msg"] = "You attempted to checkout more than there was available, you were given the maximum available"
+
         collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
-        res["info"]["availability"] = hwset1.get_availability()
-        res["info"]["capacity"] = hwset1.get_capacity()
-        res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
 
-
+    print("This is the response")
+    print(res)
     return jsonify(res)
 
 
@@ -316,52 +335,50 @@ def checkout():
 @cross_origin(supports_credentials=True)
 def checkin():
     req = request.get_json()
-    print("testing1: " + str(req))
+    print("This is the req", req)
+    print("This is HW 1")
+    print(hwset1)
+    print("This is HW 2")
+    print(hwset2)
+
     projID = req["_id"]
-    quantity = int(req.get("number"))
+    res = {"error": False, "error_msg": ""}
 
-    if(req["name"] == "Hardware Set 1"):
-        orig_availability = hwset1.get_availability()
-        orig_capacity = hwset1.get_capacity()
-        orig_checked_out = hwset1.get_checkedout_qty(projID)
-    else:
-        orig_availability = hwset2.get_availability()
-        orig_capacity = hwset2.get_capacity()
-        orig_checked_out = hwset2.get_checkedout_qty(projID)
+    try:
+        quantity = int(req.get("number"))
+    except ValueError:
+        res["error"] = True
+        res["error_msg"] = "You did not enter a valid integer number to checkout"
+        return res
 
-    res = {"error": False,
-           "info": {
-               "availability": orig_availability,
-               "capacity": orig_capacity,
-               "checkedout_qty": orig_checked_out,
-           },
-           "set_name": req["name"]
-    }
+    if(quantity < 0):
+        res["error"] = True
+        res["error_msg"] = "You cannot check in a negative number"
+        return res
+
+
+
 
     if "Hardware Set 1" in req["name"]:
         if hwset1.check_in(quantity, projID) == 0:
             res["error"] = False
         else:
             res["error"] = True
+            res["error_msg"] = "You attempted to check in more than were checked out, all of yours were checked in"
         collection_HardwareSets.replace_one({"_id": "hwset1"}, hwset1.jsonify())
-        res["info"]["availability"] = hwset1.get_availability()
-        res["info"]["capacity"] = hwset1.get_capacity()
-        res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
 
     if "Hardware Set 2" in req["name"]:
         if hwset2.check_in(quantity, projID) == 0:
             res["error"] = False
         else:
             res["error"] = True
+            res["error_msg"] = "You attempted to check in more than were checked out, all of yours were checked in"
         collection_HardwareSets.replace_one({"_id": "hwset2"}, hwset2.jsonify())
-        res["info"]["availability"] = hwset1.get_availability()
-        res["info"]["capacity"] = hwset1.get_capacity()
-        res["info"]["checkedout_qty"] = hwset1.get_checkedout_qty(projID)
 
-
+    print("This is the response, ", res)
     return jsonify(res)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
     # app.run(host="0.0.0.0", debug=True, port=os.environ.get("PORT", 80))

@@ -29,9 +29,14 @@ const ProjectViewDetails = () => {
     const [projectName, setProjectName] = useState("")
     const [projectDesc, setProjectDesc] = useState("")
     const [name, setName] = useState("");
-		const [number, setNumber] = useState("0");
+		const [number, setNumber] = useState("");
     const [hwset1, setHWSet1] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
     const [hwset2, setHWSet2] = useState({'capacity':0, 'availability':0, 'checkedout_qty':0}); 
+
+    console.log("This is hwset1")
+    console.log(hwset1);
+    console.log("This is hwset2")
+    console.log(hwset2);
 
     const updateData = () => { // TODO: update route names based on backend
       // fetch('route - api/get_hwset1')
@@ -40,7 +45,7 @@ const ProjectViewDetails = () => {
       // fetch('route - api/get_hwset2')
       //     .then(response => response.json())
       //     .then(data => setHWSet2(data));
-      fetch("http://localhost:5000/get-project-sets", {
+      fetch("/get-project-sets", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -74,8 +79,11 @@ const ProjectViewDetails = () => {
     }
     const checkOut = async () => {
   		console.log(number + " " + name)
+      if(name == ""){
+        alert("Please specify a hardware set to check out");
+      }
       // TODO: checkout via POST (pass number and name)
-      fetch("http://localhost:5000/checkout", {
+      fetch("/checkout", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -92,13 +100,7 @@ const ProjectViewDetails = () => {
       ).then(
         data => {
           if(data.error){
-            alert("Check out exceeds availability")
-          }
-          if(data.set_name === "Hardware Set 1"){
-            setHWSet1(data.info)
-          }
-          if(data.set_name === "Hardware Set 2"){
-            setHWSet2(data.info)
+            alert(data.error_msg)
           }
         }
       )
@@ -106,8 +108,10 @@ const ProjectViewDetails = () => {
 		}
     const checkIn = async () => {
   		console.log(number + " " + name)
-      // TODO: checkout via POST (pass number and name)
-      fetch("http://localhost:5000/checkin", {
+      if(name == ""){
+      alert("Please specify a hardware set to check in");
+      }
+      fetch("/checkin", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -124,13 +128,7 @@ const ProjectViewDetails = () => {
       ).then(
         data => {
           if(data.error){
-            alert("Check in exceeds checkedout_qty")
-          }
-          if(data.set_name === "Hardware Set 1"){
-            setHWSet1(data.info)
-          }
-          if(data.set_name === "Hardware Set 2"){
-            setHWSet2(data.info)
+            alert(data.error_msg)
           }
         }
       )
@@ -150,9 +148,6 @@ const ProjectViewDetails = () => {
           <h2 align="center">Description</h2>
           <p style = {{ padding:10 }}>{projectDesc}</p>
         </Paper>
-        <Button variant="contained" color="primary">
-          Home
-        </Button>
       </Grid>
         <Grid item xs={12} md={8} align="center"  style = {{ paddingBottom:10 }}>
 

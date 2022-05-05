@@ -1,10 +1,11 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function SignOutButton(){
-
+    let navigate = useNavigate();
     function SignOutUser(){
-        fetch("http://localhost:5000/signout", {
+        fetch("/signout", {
             method: 'Post',
             headers: {
                 'Content-Type': 'application/json',
@@ -13,7 +14,8 @@ function SignOutButton(){
             credentials: 'include',
         }).then(res => res.json()
         ).then(data => alert(data.message));
-        window.location.reload();
+        
+        navigate('/');
 
         
     }
